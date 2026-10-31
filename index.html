@@ -28,7 +28,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 .brand{font:700 20px/1 var(--f-display);letter-spacing:-.01em;display:flex;align-items:baseline;gap:10px;padding-bottom:8px}
 .brand small{font:500 11px var(--f-mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 nav.tabs{display:flex;gap:2px;overflow-x:auto;max-width:100%}
-nav.tabs a{padding:9px 14px;color:var(--muted);text-decoration:none;font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs a{cursor:pointer;padding:9px 14px;color:var(--muted);text-decoration:none;font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
 nav.tabs a:hover{color:var(--ink)}
 nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
 a:focus-visible,button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -745,14 +745,24 @@ var cur=0,mode="",facts=[],hits=0,oks=0,evlog=[],cleanups=[];
 
 /* ---------- Navigation ---------- */
 var VIEWS=["guide","compare","lab","inspector"];
-function show(){
-  var h=(location.hash||"").replace("#","");if(VIEWS.indexOf(h)<0)h="guide";
+var curView=null;
+function show(v){
+  var h=v||(location.hash||"").replace("#","");if(VIEWS.indexOf(h)<0)h="guide";
+  if(h===curView)return;
+  curView=h;
   VIEWS.forEach(function(v){$("v-"+v).hidden=v!==h});
   document.querySelectorAll("nav.tabs a").forEach(function(a){if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(h==="lab")render();else cleanup();
   window.scrollTo(0,0);
 }
-window.addEventListener("hashchange",show);
+window.addEventListener("hashchange",function(){show()});
+document.querySelector("nav.tabs").addEventListener("click",function(e){
+  var a=e.target.closest("a[data-v]");if(!a)return;
+  e.preventDefault();
+  var v=a.dataset.v;
+  show(v);
+  try{if(location.hash!=="#"+v)location.hash=v}catch(x){}
+});
 
 /* ---------- Compare ---------- */
 var cl=0;
