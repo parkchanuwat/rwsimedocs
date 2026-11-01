@@ -1,268 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>IME Field Guide</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
 <style>
-/* Layout concept: engineer's field notebook. Sticky tab bar, one working area, side-by-side Microsoft / Apple columns. */
+/* Layout concept: an input-method workbench. Floating sidebar for the four views; blue draft text is the one recurring motif; cobalt marks anything you can press. */
 :root{
-  --bg:#EDF0F4; --surface:#FFFFFF; --surface2:#E3E8EF; --ink:#101826; --muted:#4F5B6E; --line:#CBD3DE;
-  --accent:#0E7C86; --accent-ink:#FFFFFF; --ms:#2563C9; --mac:#B83263;
-  --bad:#C2362F; --good:#1C7F47; --warn:#9A6212;
-  --f-display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI","Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Hiragino Sans","PingFang SC","PingFang TC","Microsoft YaHei","Microsoft JhengHei","Yu Gothic","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans JP","Noto Sans SC","Noto Sans KR",monospace;
+  --paper:#F3F4F9; --panel:#FFFFFF; --panel-2:#E9EBF4; --ink:#12162B; --ink-2:#4B5272; --rule:#D8DBE8;
+  --cobalt:#2B46E8; --on-cobalt:#FFFFFF; --cobalt-soft:#E3E7FF;
+  --marker:#FFE15A; --marker-ink:#2B2200;
+  --bad:#CF3A31; --good:#13895A; --warn:#A06400; --win:#1C6FCF; --mac:#AE3684;
+  --shadow:0 1px 2px rgba(18,22,43,.06),0 8px 24px -12px rgba(18,22,43,.18);
+  --f-display:"Archivo","Figtree",system-ui,sans-serif;
+  --f-body:"Figtree","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Sans TC",system-ui,-apple-system,"Segoe UI","Hiragino Sans","PingFang SC","Malgun Gothic","Yu Gothic",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,"Noto Sans JP","Noto Sans KR",monospace;
+  --f-cjk:"Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Sans TC","Hiragino Sans","PingFang SC","Malgun Gothic","Yu Gothic",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0D121A; --surface:#151C27; --surface2:#1E2735; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2B3547;
-  --accent:#3FC1CC; --accent-ink:#06161A; --ms:#78A6F5; --mac:#F07FA6;
-  --bad:#F0827B; --good:#6FD39B; --warn:#E5B567; color-scheme:dark}}
+  --paper:#0B0E1B; --panel:#131833; --panel-2:#1B2144; --ink:#E9ECF8; --ink-2:#A0A7C6; --rule:#29305A;
+  --cobalt:#8A9BFF; --on-cobalt:#0B0E1B; --cobalt-soft:#232B5E;
+  --marker:#FFD94A; --marker-ink:#241C00;
+  --bad:#FF8C82; --good:#5FD69D; --warn:#F2BC5E; --win:#73B3FF; --mac:#F28FCB;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0D121A; --surface:#151C27; --surface2:#1E2735; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2B3547;
-  --accent:#3FC1CC; --accent-ink:#06161A; --ms:#78A6F5; --mac:#F07FA6;
-  --bad:#F0827B; --good:#6FD39B; --warn:#E5B567; color-scheme:dark}
+  --paper:#0B0E1B; --panel:#131833; --panel-2:#1B2144; --ink:#E9ECF8; --ink-2:#A0A7C6; --rule:#29305A;
+  --cobalt:#8A9BFF; --on-cobalt:#0B0E1B; --cobalt-soft:#232B5E;
+  --marker:#FFD94A; --marker-ink:#241C00;
+  --bad:#FF8C82; --good:#5FD69D; --warn:#F2BC5E; --win:#73B3FF; --mac:#F28FCB;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7); color-scheme:dark}
+
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);padding-block:0 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:30}
-.wrap{max-width:1040px;margin:0 auto}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
-.bar{max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 18px}
-.brand{font:700 20px/1 var(--f-display);letter-spacing:-.01em;display:flex;align-items:baseline;gap:10px;padding-bottom:8px}
-.brand small{font:500 11px var(--f-mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
-nav.tabs{display:flex;gap:2px;overflow-x:auto;max-width:100%}
-nav.tabs button{cursor:pointer;background:none;border:0;border-bottom:3px solid transparent;border-radius:0;font:inherit;padding:9px 14px;color:var(--muted);font-weight:500;white-space:nowrap}
-nav.tabs button:hover{color:var(--ink)}
-nav.tabs button[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
-a:focus-visible,button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-section.view{padding-top:28px;display:flex;flex-direction:column;gap:22px}
-h1{font:800 clamp(30px,5.4vw,46px)/1.05 var(--f-display);letter-spacing:-.02em;margin:0;text-wrap:balance;max-width:20ch}
-h2{font:700 24px/1.2 var(--f-display);letter-spacing:-.01em;margin:0;text-wrap:balance}
-h3{font:600 16px/1.3 var(--f-body);margin:0}
-p{margin:0;max-width:68ch}
-.lede{font-size:17px;color:var(--muted);max-width:60ch}
-.eyebrow{font:500 11px var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px}
-.note{font-size:13px;color:var(--muted);border-left:3px solid var(--warn);padding:4px 0 4px 12px;max-width:72ch}
-code,.mono{font-family:var(--f-mono);font-size:.9em}
-code{background:var(--surface2);padding:1px 5px;border-radius:4px}
-kbd{font:500 12px var(--f-mono);background:var(--surface2);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;white-space:nowrap}
-.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
-.flow .step{flex:1 1 130px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
-.flow .step b{display:block;font:600 13px var(--f-mono);color:var(--accent);margin-bottom:2px}
-.flow .step span{font-size:13px;color:var(--muted)}
-.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
-table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
-th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font:500 11px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background:var(--surface2)}
-tr:last-child td{border-bottom:0}
-.pill{display:inline-block;font:500 11px var(--f-mono);padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
-.pill.ms{color:var(--ms);border-color:var(--ms)} .pill.mac{color:var(--mac);border-color:var(--mac)}
-.pill.bad{color:var(--bad);border-color:var(--bad)} .pill.good{color:var(--good);border-color:var(--good)}
-.seg{display:flex;flex-wrap:wrap;gap:6px}
-.seg button,.btn{font:500 14px var(--f-body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 13px;cursor:pointer;min-height:38px;text-align:left}
-.seg button:hover,.btn:hover{border-color:var(--accent)}
-.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
-.btn.sm{padding:5px 10px;min-height:30px;font-size:13px}
-.side{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:14px}
-.side .col{border:1px solid var(--line);border-top-width:4px;border-radius:10px;background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.col.ms{border-top-color:var(--ms)} .col.mac{border-top-color:var(--mac)}
-.col h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.col ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px}
-.typed{font:400 14px/1.7 var(--f-mono);background:var(--surface2);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:pre}
-.cjk{font-size:1.15em}
-.bugcase{border-left:4px solid var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--surface));border-radius:0 8px 8px 0;padding:10px 14px;font-size:14px;display:flex;flex-direction:column;gap:4px}
-</style>
-<style>
-.lab{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr);gap:14px;align-items:start}
-@media (max-width:760px){.lab{grid-template-columns:minmax(0,1fr)}}
-.sclist{display:flex;flex-direction:column;gap:6px}
-.sclist button{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;cursor:pointer;color:var(--ink);font:500 14px var(--f-body);min-height:44px}
-.sclist button[aria-current="true"]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
-.sclist .lg{font:600 11px var(--f-mono);color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
-.sclist .st{font:500 11px var(--f-mono);color:var(--muted)}
-.sclist .st.ok{color:var(--good)}
-.progress{height:6px;background:var(--surface2);border-radius:9px;overflow:hidden}
-.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
-.mock{border:1px solid var(--line);border-radius:10px;background:var(--surface2);padding:14px;display:flex;flex-direction:column;gap:12px}
-.mock .lbl{font:500 11px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.field{background:var(--surface);border:1px solid var(--line);border-radius:6px;min-height:42px;padding:9px 12px;font-size:18px;display:flex;flex-wrap:wrap;align-items:center;word-break:break-all}
-.field .comp{text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px;text-decoration-thickness:2px;background:color-mix(in srgb,var(--accent) 16%,transparent)}
-.field .ph{color:var(--muted);font-size:14px}
-.field .caret{display:inline-block;width:2px;height:1.2em;background:var(--ink);margin-left:1px;animation:bl 1s steps(1) infinite}
-@keyframes bl{50%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.field .caret{animation:none}.progress i{transition:none}}
-.cands{display:flex;flex-wrap:wrap;gap:4px;font-size:16px}
-.cands span{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:2px 9px}
-.cands span:first-child{border-color:var(--accent)}
-.cands small{font:500 10px var(--f-mono);color:var(--muted);margin-right:3px}
-.appstate{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:0}
-.appstate dt{font:500 12px var(--f-mono);color:var(--muted)}
-.appstate dd{margin:0;font-weight:500}
-.appstate dd.bad{color:var(--bad)} .appstate dd.good{color:var(--good)}
-.keys{display:flex;flex-wrap:wrap;gap:6px}
-.keys button{font:500 13px var(--f-mono);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-bottom-width:3px;border-radius:7px;padding:7px 11px;cursor:pointer;min-height:38px}
-.keys button:active{transform:translateY(1px)}
-.keys button:hover{border-color:var(--accent)}
-.log{font:400 12px/1.6 var(--f-mono);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-height:150px;overflow:auto;margin:0;list-style:none}
-.log li{padding:1px 0;color:var(--muted)} .log li.err{color:var(--bad)} .log li.ok{color:var(--good)}
-.quiz{display:flex;flex-direction:column;gap:8px}
-.quiz label{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:14px}
-.quiz label.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--surface))}
-.quiz label.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--surface))}
-.quiz input{margin-top:3px}
-.explain{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--good);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
-.report{font:400 12.5px/1.6 var(--f-mono);white-space:pre-wrap;background:var(--surface2);border-radius:8px;padding:12px;margin:0;overflow-x:auto}
-.insp textarea{width:100%;min-height:120px;font:18px/1.5 var(--f-body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:12px;resize:vertical}
-.evwrap{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
-.evwrap table{min-width:520px;font:400 12.5px var(--f-mono)}
-.evwrap td,.evwrap th{padding:5px 10px}
-tr.ev-comp td:first-child{color:var(--accent);font-weight:600}
-tr.ev-key td:first-child{color:var(--muted)}
-tr.ev-input td:first-child{color:var(--good)}
-.hint{font-size:13px;color:var(--muted)}
+body{background:var(--paper);color:var(--ink);font:16px/1.6 var(--f-body);padding-block:16px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:40}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+p{margin:0;max-width:66ch}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font:800 clamp(34px,5.2vw,58px)/1 var(--f-display);font-stretch:118%;letter-spacing:-.015em}
+h2{font:700 clamp(22px,2.6vw,28px)/1.15 var(--f-display);font-stretch:112%;letter-spacing:-.01em}
+h3{font:700 17px/1.3 var(--f-body)}
+code{font:500 .86em var(--f-mono);background:var(--panel-2);padding:1px 6px;border-radius:5px}
+kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.9em;font:600 12px/1 var(--f-mono);background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-bottom-width:3px;border-radius:6px;padding:4px 6px;white-space:nowrap;vertical-align:1px}
+.cjk{font-family:var(--f-cjk)}
+.draft{color:var(--cobalt)}
+.eyebrow{font:600 11.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--cobalt)}
+.lede{font-size:18px;color:var(--ink-2);max-width:58ch}
+.hint{font-size:13.5px;color:var(--ink-2)}
+.lbl{font:600 11px var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+.note{font-size:14px;color:var(--ink-2);background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px 12px 16px;max-width:76ch;position:relative}
+.note::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--cobalt)}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:236px minmax(0,1fr);gap:28px;max-width:1360px;margin:0 auto;align-items:start}
+.side{position:sticky;top:calc(16px + env(safe-area-inset-top,0px));height:calc(100dvh - 32px - env(safe-area-inset-top,0px));background:var(--panel);border:1px solid var(--rule);border-radius:18px;padding:20px 14px;display:flex;flex-direction:column;gap:22px;box-shadow:var(--shadow)}
+.brand{display:flex;flex-direction:column;gap:6px;padding:0 6px}
+.brand b{font:800 22px/1 var(--f-display);font-stretch:120%;letter-spacing:-.01em}
+.brand b span{color:var(--cobalt)}
+.brand small{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+nav.views{display:flex;flex-direction:column;gap:4px}
+nav.views button{display:grid;grid-template-columns:28px minmax(0,1fr);gap:2px 10px;align-items:center;text-align:left;background:none;border:0;border-radius:11px;padding:10px;cursor:pointer;color:var(--ink-2)}
+nav.views button .n{grid-row:1/3;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:600 12px var(--f-mono);background:var(--panel-2);color:var(--ink-2)}
+nav.views button .t{font-weight:600;color:var(--ink);font-size:15px;line-height:1.2}
+nav.views button .d{font-size:12.5px;line-height:1.3}
+nav.views button:hover{background:var(--panel-2)}
+nav.views button[aria-current="page"]{background:var(--cobalt-soft)}
+nav.views button[aria-current="page"] .n{background:var(--cobalt);color:var(--on-cobalt)}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:12px 8px 2px;border-top:1px solid var(--rule)}
+.meter{height:8px;border-radius:8px;background:var(--panel-2);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--cobalt);border-radius:8px;transition:width .4s}
+main{min-width:0}
+section.view{display:flex;flex-direction:column;gap:28px;padding-top:8px}
+@media (max-width:900px){
+  body{padding-top:0}
+  .shell{display:block}
+  .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;flex-direction:column;gap:8px;padding:12px 12px 8px;border-radius:0 0 16px 16px;border-top:0;margin:0 calc(-1*max(16px,env(safe-area-inset-right,0px))) 20px calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:30}
+  .brand{flex-direction:row;align-items:baseline;gap:10px;padding:0}
+  .brand b{font-size:19px}
+  nav.views{flex-direction:row;overflow-x:auto;gap:4px;scrollbar-width:none}
+  nav.views button{grid-template-columns:auto;padding:8px 12px;white-space:nowrap}
+  nav.views button .n,nav.views button .d{display:none}
+  .side-foot{display:none}
+}
+
+/* ---------- shared bits ---------- */
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;font:600 14px var(--f-body);background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:10px;padding:8px 14px;min-height:38px;cursor:pointer}
+.btn:hover{border-color:var(--cobalt)}
+.btn.primary{background:var(--cobalt);color:var(--on-cobalt);border-color:var(--cobalt)}
+.btn.sm{padding:6px 12px;min-height:34px;font-size:13.5px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:3px;background:var(--panel-2);border-radius:12px;padding:3px}
+.seg button{background:none;border:0;border-radius:9px;padding:7px 12px;font-weight:600;font-size:14px;color:var(--ink-2);cursor:pointer;min-height:36px;text-align:left}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 11.5px var(--f-mono);padding:3px 9px;border-radius:99px;border:1px solid var(--rule);color:var(--ink-2);background:var(--panel);white-space:nowrap}
+button.chip{cursor:pointer}
+button.chip:hover{border-color:var(--cobalt);color:var(--cobalt)}
+.chip.win{color:var(--win);border-color:currentColor}
+.chip.mac{color:var(--mac);border-color:currentColor}
+.tbl{overflow-x:auto;border:1px solid var(--rule);border-radius:14px;background:var(--panel)}
+.tbl table{border-collapse:collapse;width:100%;min-width:620px;font-size:14.5px}
+.tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl th{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:var(--panel-2)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td:first-child{font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+</head>
+<body>
+
 <style>
-.lbl{font:500 11px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.lab{grid-template-columns:minmax(0,270px) minmax(0,1fr)}
-@media (max-width:760px){.lab{grid-template-columns:minmax(0,1fr)}.sclist{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}.sclist .grp{grid-column:1/-1}}
-.sclist .grp{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 2px 2px}
-.sclist .grp:first-child{padding-top:0}
-.sclist .lg{min-width:44px;text-align:center}
-.sclist button{align-items:start}
-.setupcard{background:var(--surface2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
-dl.kv{display:grid;grid-template-columns:minmax(88px,max-content) minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
-dl.kv dt{font:500 12px var(--f-mono);color:var(--muted);padding-top:2px}
+/* ---------- Basics: hero ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:32px;align-items:center}
+.hero-text{display:flex;flex-direction:column;gap:16px}
+@media (max-width:1100px){.hero{grid-template-columns:minmax(0,1fr)}}
+.imewin{background:var(--panel);border:1px solid var(--rule);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
+.imewin-top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--panel-2);flex-wrap:wrap}
+.imewin-src{font:600 12px var(--f-mono);color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.imewin-src .mode{display:inline-flex;width:22px;height:22px;border-radius:6px;background:var(--ink);color:var(--paper);align-items:center;justify-content:center;font:700 12px var(--f-cjk)}
+.imewin-langs{display:flex;gap:3px}
+.imewin-langs button{background:none;border:1px solid transparent;border-radius:7px;padding:2px 8px;font:600 12px var(--f-cjk);color:var(--ink-2);cursor:pointer}
+.imewin-langs button[aria-pressed="true"]{background:var(--panel);border-color:var(--rule);color:var(--ink)}
+.imewin-body{padding:22px 18px 16px;display:flex;flex-direction:column;gap:16px}
+.imefield{position:relative;min-height:168px;border:1px solid var(--rule);border-radius:12px;padding:14px 14px;font:400 28px/1.3 var(--f-cjk);background:var(--paper)}
+.imefield .caret{display:inline-block;width:2px;height:1.05em;background:var(--cobalt);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.imefield .dwrap{position:relative;display:inline}
+.cands{position:absolute;left:0;top:calc(100% + 8px);z-index:2;background:var(--panel);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow);padding:4px;display:flex;flex-direction:column;min-width:130px;font-size:17px;line-height:1.3}
+.cands span{display:flex;gap:10px;align-items:baseline;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.cands span small{font:500 11px var(--f-mono);color:var(--ink-2)}
+.cands span.on{background:var(--cobalt);color:var(--on-cobalt)}
+.cands span.on small{color:var(--on-cobalt)}
+.keystrip{display:flex;flex-wrap:wrap;gap:5px;min-height:30px;align-items:center}
+.keystrip kbd{transition:transform .15s,background .15s}
+.keystrip kbd.hot{background:var(--cobalt);color:var(--on-cobalt);border-color:var(--cobalt);transform:translateY(1px)}
+.evtick{font:500 12px/1.65 var(--f-mono);color:var(--ink-2);background:var(--panel-2);border-radius:10px;padding:8px 12px;min-height:72px;overflow:hidden}
+.evtick div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evtick div:last-child{color:var(--ink)}
+.evtick .c{color:var(--cobalt)}
+
+/* ---------- Basics: pipeline ---------- */
+.pipe{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.pipe{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.pipe{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;position:relative;min-width:0}
+.stage .k{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--cobalt)}
+.stage .vis{min-height:58px;display:flex;align-items:center;flex-wrap:wrap;gap:4px;font:400 22px/1.3 var(--f-cjk)}
+.stage .vis .mini{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:8px;font-size:14px;padding:2px;background:var(--panel)}
+.stage .vis .mini span{padding:1px 8px;border-radius:5px}
+.stage .vis .mini span:first-child{background:var(--cobalt);color:var(--on-cobalt)}
+.stage p{font-size:14px;color:var(--ink-2)}
+.sect{display:flex;flex-direction:column;gap:14px}
+.sect-head{display:flex;flex-direction:column;gap:6px}
+
+/* ---------- Basics: families ---------- */
+.fams{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px}
+.fam{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.fam .glyph{height:64px;border-radius:12px;background:var(--panel-2);display:flex;align-items:center;justify-content:center;gap:8px;font:500 22px var(--f-cjk);color:var(--ink);overflow:hidden}
+.fam .glyph .x{font:700 16px var(--f-mono);color:var(--bad)}
+.fam .glyph .box{position:relative;width:132px;height:44px;border:1px dashed var(--ink-2);border-radius:6px}
+.fam .glyph .box i{position:absolute;left:8px;top:4px;width:44px;height:16px;border-radius:4px;background:var(--cobalt)}
+.fam .glyph .box b{position:absolute;left:62px;bottom:6px;width:2px;height:16px;background:var(--ink)}
+.fam p{font-size:14.5px;color:var(--ink-2)}
+.fam .row{margin-top:auto}
+
+/* ---------- Compare ---------- */
+.langpick{display:flex;flex-wrap:wrap;gap:8px}
+.langpick button{display:flex;flex-direction:column;align-items:flex-start;gap:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:8px 14px;cursor:pointer;min-width:120px}
+.langpick button b{font:700 18px var(--f-cjk)}
+.langpick button span{font-size:12.5px;color:var(--ink-2)}
+.langpick button[aria-pressed="true"]{border-color:var(--cobalt);box-shadow:0 0 0 1px var(--cobalt)}
+.osgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.oswin{background:var(--panel);border:1px solid var(--rule);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.oswin-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--rule)}
+.oswin-bar .dots{display:flex;gap:6px}
+.oswin-bar .dots i{width:10px;height:10px;border-radius:50%;background:var(--rule)}
+.oswin.win .oswin-bar{border-top:3px solid var(--win)}
+.oswin.mac .oswin-bar{border-top:3px solid var(--mac)}
+.oswin-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+.oswin-body h3{font-size:18px}
+.typed{font:500 14px/1.8 var(--f-mono);background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px 12px;overflow-x:auto;white-space:pre}
+.oswin ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14.5px}
+.trouble{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px}
+.trouble .ic{flex:none;width:34px;height:34px;border-radius:10px;background:var(--bad);color:var(--panel);display:flex;align-items:center;justify-content:center;font:800 18px var(--f-display)}
+.trouble div{display:flex;flex-direction:column;gap:4px;min-width:0}
+
+/* ---------- Lab ---------- */
+.labhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.labhead .txt{display:flex;flex-direction:column;gap:10px;max-width:640px}
+.labhead .ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.suite{display:flex;flex-direction:column;gap:10px}
+.suite .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.suite .grp>.lbl{width:140px;flex:none}
+@media (max-width:620px){.suite .grp>.lbl{width:100%}}
+.suite button{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:6px 11px;cursor:pointer;font-size:13.5px;color:var(--ink-2);min-height:36px}
+.suite button b{font:700 12px var(--f-mono);color:var(--ink)}
+.suite button .dot{width:8px;height:8px;border-radius:50%;background:var(--rule);flex:none}
+.suite button .dot.ok{background:var(--bad)}
+.suite button:hover{border-color:var(--cobalt)}
+.suite button[aria-current="true"]{border-color:var(--cobalt);background:var(--cobalt-soft);color:var(--ink)}
+.labprog{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
+.labprog .meter{width:120px}
+.scene{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:20px;align-items:start}
+@media (max-width:1180px){.scene{grid-template-columns:minmax(0,1fr)}}
+.brief,.bench{display:flex;flex-direction:column;gap:16px;min-width:0}
+.bench{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}
+@media (max-width:1180px){.bench{position:static}}
+.scene-title{display:flex;flex-direction:column;gap:8px}
+.scene-title h2{font-size:clamp(22px,2.4vw,27px)}
+.setupcard{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.setupcard .src{font:700 17px var(--f-body);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+dl.kv{display:grid;grid-template-columns:minmax(84px,max-content) minmax(0,1fr);gap:7px 14px;margin:0;font-size:14px}
+dl.kv dt{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);padding-top:3px}
 dl.kv dd{margin:0}
-details{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--surface);font-size:14px}
-details summary{cursor:pointer;font-weight:500}
+details{border:1px solid var(--rule);border-radius:12px;padding:10px 14px;background:var(--panel);font-size:14px}
+details summary{cursor:pointer;font-weight:600}
 details p{margin:8px 0 2px}
-ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px}
-ol.steps li{counter-increment:s;display:grid;grid-template-columns:26px minmax(0,1fr);column-gap:10px;row-gap:1px}
-ol.steps li::before{content:counter(s);grid-row:1/3;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font:600 12px var(--f-mono);display:flex;align-items:center;justify-content:center;margin-top:1px}
-ol.steps .do{font-weight:500}
-ol.steps .see{font-size:13px;color:var(--muted)}
-.modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.realfield{width:100%;font:18px/1.5 var(--f-body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;resize:vertical}
-.verdict{border:1px solid var(--line);border-left-width:5px;border-radius:8px;padding:12px 14px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
-.verdict.bug{border-left-color:var(--bad)}
-.verdict.ok{border-left-color:var(--good)}
-.verdict.wait{border-left-color:var(--muted)}
-.verdict b{font:700 16px var(--f-display)}
-.verdict.bug b{color:var(--bad)}
-.verdict.ok b{color:var(--good)}
-ul.facts{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:13px;overflow-wrap:anywhere}
-ul.facts li.bad{color:var(--bad)}
-ul.facts li.good{color:var(--good)}
-.cpline{display:flex;flex-wrap:wrap;gap:4px;min-height:24px}
-.cpline span.ch{display:inline-flex;flex-direction:column;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:18px;min-width:44px}
+.stepcard{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+ol.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+ol.steps li label{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:10px;padding:8px;border-radius:10px;cursor:pointer}
+ol.steps li label:hover{background:var(--panel-2)}
+ol.steps input{position:absolute;opacity:0;pointer-events:none}
+ol.steps .num{grid-row:1/3;width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font:700 12px var(--f-mono)}
+ol.steps .do{font-weight:600;font-size:15px}
+ol.steps .see{font-size:13.5px;color:var(--ink-2)}
+ol.steps input:checked+label .num{background:var(--good);border-color:var(--good);color:var(--panel)}
+ol.steps input:checked+label .do{color:var(--ink-2);text-decoration:line-through;text-decoration-thickness:1px}
+ol.steps input:focus-visible+label{outline:2px solid var(--cobalt);outline-offset:1px}
+.benchcard{background:var(--panel);border:1px solid var(--rule);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.benchbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:var(--panel-2);border-bottom:1px solid var(--rule)}
+.mock{padding:16px;display:flex;flex-direction:column;gap:14px}
+.mock .lbl{margin-bottom:-2px}
+.mock>.btn{align-self:flex-start}
+.realfield{width:100%;font:400 20px/1.45 var(--f-cjk);background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:10px;padding:11px 13px;resize:vertical}
+.realfield:focus{outline:2px solid var(--cobalt);outline-offset:0;border-color:var(--cobalt)}
+dl.appstate{display:grid;grid-template-columns:minmax(110px,max-content) minmax(0,1fr);gap:0;margin:0;background:var(--paper);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+dl.appstate dt,dl.appstate dd{padding:8px 12px;border-bottom:1px solid var(--rule);margin:0;min-width:0}
+dl.appstate dt{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);padding-top:10px}
+dl.appstate dd{font-weight:600;font-size:15px;overflow-wrap:anywhere}
+dl.appstate dt:nth-last-of-type(1),dl.appstate dd:last-child{border-bottom:0}
+dl.appstate dd.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent)}
+dl.appstate dd.good{color:var(--good)}
+.cpline{display:flex;flex-wrap:wrap;gap:5px;min-height:24px}
+.cpline span.ch{display:inline-flex;flex-direction:column;align-items:center;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:3px 9px;font:400 20px var(--f-cjk);min-width:48px}
 .cpline span.ch.wide{border-color:var(--bad)}
-.cpline small{font:500 10px var(--f-mono);color:var(--muted)}
-.sentlist{margin:0;padding-left:18px;font-size:15px}
-.cvbox{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.cpline small{font:500 10px var(--f-mono);color:var(--ink-2)}
+.sentlist{margin:6px 0 0;padding-left:18px;font:400 17px var(--f-cjk)}
+.cvbox{position:relative;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--paper)}
 canvas.cvedit{display:block;width:100%;height:150px;cursor:text}
 textarea.cvinput{position:absolute;opacity:.02;border:0;outline:0;padding:0;margin:0;resize:none;overflow:hidden;width:40px;height:30px;background:transparent;color:transparent;caret-color:transparent;font-size:24px}
-.ask{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:10px 12px;display:flex;flex-direction:column;gap:6px;margin:0}
-.ask legend{font-weight:600;font-size:14px;padding:0 4px}
+.ask{border:1px solid var(--rule);border-radius:12px;background:var(--paper);padding:10px 14px;display:flex;flex-direction:column;gap:6px;margin:0}
+.ask legend{font-weight:700;font-size:14.5px;padding:0 4px}
 .ask label{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer}
-.ask input{margin-top:4px}
-.log li.c{color:var(--accent)}
+.ask input{margin-top:4px;accent-color:var(--cobalt)}
+.verdict{margin:0 16px 16px;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--rule);background:var(--paper)}
+.verdict .vh{display:flex;align-items:center;gap:10px}
+.verdict .vh i{width:12px;height:12px;border-radius:50%;background:var(--ink-2);flex:none}
+.verdict b{font:800 18px var(--f-display);font-stretch:110%}
+.verdict.bug{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--panel))}
+.verdict.bug .vh i{background:var(--bad);box-shadow:0 0 0 4px color-mix(in srgb,var(--bad) 22%,transparent)}
+.verdict.bug b{color:var(--bad)}
+.verdict.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--panel))}
+.verdict.ok .vh i{background:var(--good)}
+.verdict.ok b{color:var(--good)}
+ul.facts{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:13.5px;overflow-wrap:anywhere}
+ul.facts li.bad{color:var(--bad)}
+ul.facts li.good{color:var(--good)}
+.reportbox{margin:0 16px 16px;display:flex;flex-direction:column;gap:8px}
+.report{font:400 12.5px/1.6 var(--f-mono);white-space:pre-wrap;background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:12px;margin:0;max-height:260px;overflow:auto}
+.evcard{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+ul.log{list-style:none;margin:0;padding:0;font:400 12px/1.65 var(--f-mono);max-height:190px;overflow:auto;color:var(--ink-2)}
+ul.log li{white-space:pre-wrap;overflow-wrap:anywhere;border-left:2px solid transparent;padding-left:8px}
+ul.log li.c{color:var(--cobalt);border-left-color:var(--cobalt)}
+ul.log li.i{color:var(--good);border-left-color:var(--good)}
+ul.log li.k{border-left-color:var(--rule)}
+
+/* ---------- Inspector ---------- */
+.inspgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.insp textarea{width:100%;min-height:130px;font:400 22px/1.5 var(--f-cjk);background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:12px;padding:14px;resize:vertical}
+.insp{padding:18px;display:flex;flex-direction:column;gap:12px}
+.evwrap{max-height:380px;overflow:auto;border:1px solid var(--rule);border-radius:14px;background:var(--panel)}
+.evwrap table{border-collapse:collapse;width:100%;min-width:560px;font:400 12.5px var(--f-mono)}
+.evwrap th,.evwrap td{padding:6px 12px;border-bottom:1px solid var(--rule);text-align:left}
+.evwrap th{position:sticky;top:0;background:var(--panel-2);font-weight:600;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+.evwrap td:first-child span{display:inline-block;padding:1px 8px;border-radius:99px;font-weight:600;font-size:11.5px}
+tr.ev-comp td:first-child span{background:var(--cobalt-soft);color:var(--cobalt)}
+tr.ev-key td:first-child span{background:var(--panel-2);color:var(--ink-2)}
+tr.ev-input td:first-child span{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.evwrap td.t{color:var(--bad);font-weight:600}
 </style>
-<header class="top"><div class="bar">
-  <div class="brand">IME Field Guide <small>CJK input QA</small></div>
-  <nav class="tabs" aria-label="Sections">
-    <button type="button" data-v="guide">1 · Basics</button>
-    <button type="button" data-v="compare">2 · Microsoft vs Apple</button>
-    <button type="button" data-v="lab">3 · Bug Lab</button>
-    <button type="button" data-v="inspector">4 · Live Inspector</button>
+<div class="shell">
+<aside class="side">
+  <div class="brand"><b><span>IME</span> Field Guide</b><small>CJK input QA</small></div>
+  <nav class="views" aria-label="Sections">
+    <button type="button" data-v="guide"><span class="n">01</span><span class="t">Basics</span><span class="d">How IME text gets made</span></button>
+    <button type="button" data-v="compare"><span class="n">02</span><span class="t">Microsoft vs Apple</span><span class="d">One language at a time</span></button>
+    <button type="button" data-v="lab"><span class="n">03</span><span class="t">Bug Lab</span><span class="d">11 hands-on tests</span></button>
+    <button type="button" data-v="inspector"><span class="n">04</span><span class="t">Live Inspector</span><span class="d">See your own events</span></button>
   </nav>
-</div></header>
+  <div class="side-foot">
+    <span class="lbl">Bug Lab progress</span>
+    <div class="meter" aria-hidden="true"><i class="progbar"></i></div>
+    <span class="hint proghint"></span>
+  </div>
+</aside>
 
-<main class="wrap">
-
+<main>
+<!-- ================= BASICS ================= -->
 <section class="view" id="v-guide" hidden>
-  <div class="eyebrow">Chinese (Simplified, Traditional) · Japanese · Korean</div>
-  <h1>Why IME bugs happen</h1>
-  <p class="lede">An input method editor sits between the keyboard and the text field. The app sees keys that are not yet text. Most IME bugs come from the app treating those in-between keys as if they were final.</p>
-
-  <h2>The path from key to text</h2>
-  <div class="flow">
-    <div class="step"><b>1 · Keys</b><span>You press <kbd>n</kbd> <kbd>i</kbd> <kbd>h</kbd> <kbd>o</kbd> <kbd>n</kbd>. The IME takes them first.</span></div>
-    <div class="step"><b>2 · Composition</b><span>Underlined draft text appears: <span class="cjk" lang="ja">にほん</span>. Nothing is committed yet.</span></div>
-    <div class="step"><b>3 · Candidates</b><span>A list offers matches: <span class="cjk" lang="ja">日本 / 二本 / ニホン</span>.</span></div>
-    <div class="step"><b>4 · Commit</b><span><kbd>Space</kbd>, <kbd>Enter</kbd>, a number key or a click picks one. Only now does the field hold final text.</span></div>
-  </div>
-
-  <h2>What the app receives</h2>
-  <div class="tblwrap"><table>
-    <thead><tr><th>Moment</th><th>Browser / web view</th><th>Windows native</th><th>macOS native</th></tr></thead>
-    <tbody>
-      <tr><td>Key pressed while composing</td><td><code>keydown</code> with <code>isComposing=true</code>, often <code>keyCode 229</code></td><td>Key goes to the IME first (TSF / IMM32)</td><td><code>interpretKeyEvents</code> hands it to the input context</td></tr>
-      <tr><td>Draft text starts</td><td><code>compositionstart</code></td><td><code>WM_IME_STARTCOMPOSITION</code></td><td><code>setMarkedText:</code></td></tr>
-      <tr><td>Draft text changes</td><td><code>compositionupdate</code>, <code>input</code> (insertCompositionText)</td><td><code>WM_IME_COMPOSITION</code></td><td><code>setMarkedText:</code> again</td></tr>
-      <tr><td>Candidate window placement</td><td>Caret rectangle of the field</td><td>Text-extent query from TSF</td><td><code>firstRectForCharacterRange:</code></td></tr>
-      <tr><td>Text committed</td><td><code>compositionend</code>, then <code>input</code></td><td><code>WM_IME_ENDCOMPOSITION</code> / result string</td><td><code>insertText:</code> / <code>unmarkText</code></td></tr>
-    </tbody>
-  </table></div>
-  <p class="note">Event order is not identical everywhere. Safari, for example, can fire <code>compositionend</code> before the <kbd>Enter</kbd> keydown that confirmed the text, so an <code>isComposing</code> check that works in Chrome can fail there.</p>
-
-  <h2>Six bug families to test for</h2>
-  <div class="grid3">
-    <div class="card"><h3>Hotkey leak</h3><p>A single-key shortcut such as <kbd>Space</kbd> or <kbd>1</kbd> fires while the IME is using that key to pick a candidate.</p><span class="pill">Labs: JA-1, KO-1, ZH-2</span></div>
-    <div class="card"><h3>Enter submits early</h3><p>The <kbd>Enter</kbd> that confirms a conversion also presses the dialog's OK button, or leaves a leftover character behind.</p><span class="pill">Labs: JA-2, KO-2</span></div>
-    <div class="card"><h3>Full-width leakage</h3><p>The IME produces <span lang="zh-CN">：</span> <span lang="ja">１２０</span> or curly quotes where the field only accepts ASCII.</p><span class="pill">Labs: JA-3, ZH-1</span></div>
-    <div class="card"><h3>Lost composition</h3><p>Moving focus, or re-rendering the field while you type, throws away the draft text instead of keeping it.</p><span class="pill">Labs: JA-4, KO-4</span></div>
-    <div class="card"><h3>Candidate window position</h3><p>The list opens at a screen corner or far from the caret in scaled, rotated or custom-drawn text fields. Check this by eye in every text field type.</p><span class="pill">Lab: JA-5</span></div>
-    <div class="card"><h3>Key code vs character</h3><p>Shortcuts matched by typed character fail when Korean, Zhuyin or kana mode turns <kbd>V</kbd> into <span lang="ko">ㅍ</span>.</p><span class="pill">Lab: KO-3</span></div>
-  </div>
-  <p class="note">Everything here describes common behavior. Exact symptoms depend on the OS version, IME version, settings and the app's text engine. Treat each example as a pattern to try on your build and confirm before filing.</p>
-</section>
-
-<section class="view" id="v-compare" hidden>
-  <div class="eyebrow">Side by side</div>
-  <h2>Microsoft IME and Apple IME, one language at a time</h2>
-  <div class="seg" id="cmp-tabs" role="group" aria-label="Language"></div>
-  <div id="cmp-root"></div>
-</section>
-
-<section class="view" id="v-lab" hidden>
-  <div class="eyebrow">Hands-on · your real keyboard</div>
-  <h2>Bug Lab</h2>
-  <p class="lede">Eleven small test apps, one bug pattern each, matching the six families in Basics. Japanese and Korean come first. You type with your own IME, follow the numbered steps, and the page reads the real browser events to tell you whether the bug showed up. A bug report draft is built from the result.</p>
-  <div class="row"><span class="hint">Your computer:</span>
-    <div class="seg" id="plat" role="group" aria-label="Your computer">
-      <button type="button" data-p="win" aria-pressed="true">Windows · Microsoft IME</button>
-      <button type="button" data-p="mac" aria-pressed="false">macOS · Apple IME</button>
+  <div class="hero">
+    <div class="hero-text">
+      <div class="eyebrow">Chinese · Japanese · Korean</div>
+      <h1>Why IME bugs happen</h1>
+      <p class="lede">An input method editor sits between the keyboard and the text field. The app sees keys that are not yet text. Most IME bugs come from the app treating those in-between keys as if they were final.</p>
+      <p class="hint">The window on the right replays real IME sessions. Blue text is the <span class="draft">draft</span>: the IME owns it until it is committed.</p>
+    </div>
+    <div class="imewin" id="demo" aria-label="IME composition demo">
+      <div class="imewin-top">
+        <div class="imewin-src"><span class="mode" id="demo-mode">あ</span><span id="demo-src">Japanese · Romaji</span></div>
+        <div class="imewin-langs" id="demo-langs" role="group" aria-label="Demo language">
+          <button type="button" data-l="0" aria-pressed="true" lang="ja">日</button>
+          <button type="button" data-l="1" aria-pressed="false" lang="ko">한</button>
+          <button type="button" data-l="2" aria-pressed="false" lang="zh-CN">简</button>
+          <button type="button" data-l="3" aria-pressed="false" lang="zh-TW">繁</button>
+        </div>
+      </div>
+      <div class="imewin-body">
+        <div class="imefield" id="demo-field" lang="ja"><span id="demo-text"></span><span class="dwrap"><span class="draft" id="demo-draft">にほんご</span><span class="cands" id="demo-cands"><span class="on"><small>1</small>日本語</span><span><small>2</small>二本後</span><span><small>3</small>にほんご</span></span></span><span class="caret"></span></div>
+        <div><div class="lbl" style="margin-bottom:6px">Keys pressed</div><div class="keystrip" id="demo-keys"><kbd>n</kbd><kbd>i</kbd><kbd>h</kbd><kbd>o</kbd><kbd>n</kbd><kbd>g</kbd><kbd>o</kbd><kbd class="hot">Space</kbd></div></div>
+        <div><div class="lbl" style="margin-bottom:6px">What the app receives</div><div class="evtick" id="demo-ev"><div class="c">compositionstart ""</div><div class="c">compositionupdate "にほんご"</div><div>keydown key="Process" isComposing=true keyCode=229</div></div></div>
+      </div>
     </div>
   </div>
-  <p class="note">You need the matching input source installed. Each lab lists the exact one, the layout and the mode. The labs assume a standard US QWERTY keyboard. A JIS or Korean keyboard works too: its extra keys (半角/全角, かな, 한/영) do the same job as the switch keys listed. Function keys and Ctrl or Cmd shortcuts need a hardware keyboard.</p>
-  <div><div class="progress" aria-hidden="true"><i id="prog"></i></div><p class="hint" id="proghint" style="margin-top:6px"></p></div>
-  <div class="lab">
-    <div class="sclist" id="sclist"></div>
-    <div id="scene" class="card"></div>
+
+  <div class="sect">
+    <div class="sect-head"><h2>The path from key to text</h2></div>
+    <div class="pipe">
+      <div class="stage"><span class="k">1 · Keys</span><div class="vis"><kbd>n</kbd><kbd>i</kbd><kbd>h</kbd><kbd>o</kbd><kbd>n</kbd></div><p>The IME takes every key first. The app only sees placeholders.</p></div>
+      <div class="stage"><span class="k">2 · Composition</span><div class="vis" lang="ja"><span class="draft">にほん</span></div><p>Underlined draft text. Nothing is committed yet.</p></div>
+      <div class="stage"><span class="k">3 · Candidates</span><div class="vis" lang="ja"><span class="mini"><span>日本</span><span>二本</span><span>ニホン</span></span></div><p><kbd>Space</kbd> or arrows move through matches. Number keys pick one.</p></div>
+      <div class="stage"><span class="k">4 · Commit</span><div class="vis" lang="ja">日本</div><p><kbd>Enter</kbd>, a number or a click commits. Only now is it final text.</p></div>
+    </div>
+  </div>
+
+  <div class="sect">
+    <div class="sect-head"><h2>What the app receives</h2></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Moment</th><th>Browser / web view</th><th>Windows native</th><th>macOS native</th></tr></thead>
+      <tbody>
+        <tr><td>Key pressed while composing</td><td><code>keydown</code> with <code>isComposing=true</code>, often <code>keyCode 229</code></td><td>Key goes to the IME first (TSF / IMM32)</td><td><code>interpretKeyEvents</code> hands it to the input context</td></tr>
+        <tr><td>Draft text starts</td><td><code>compositionstart</code></td><td><code>WM_IME_STARTCOMPOSITION</code></td><td><code>setMarkedText:</code></td></tr>
+        <tr><td>Draft text changes</td><td><code>compositionupdate</code>, <code>input</code> (insertCompositionText)</td><td><code>WM_IME_COMPOSITION</code></td><td><code>setMarkedText:</code> again</td></tr>
+        <tr><td>Candidate window placement</td><td>Caret rectangle of the field</td><td>Text-extent query from TSF</td><td><code>firstRectForCharacterRange:</code></td></tr>
+        <tr><td>Text committed</td><td><code>compositionend</code>, then <code>input</code></td><td><code>WM_IME_ENDCOMPOSITION</code> / result string</td><td><code>insertText:</code> / <code>unmarkText</code></td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Event order is not identical everywhere. Safari, for example, can fire <code>compositionend</code> before the <kbd>Enter</kbd> keydown that confirmed the text, so an <code>isComposing</code> check that works in Chrome can fail there.</p>
+  </div>
+
+  <div class="sect">
+    <div class="sect-head"><h2>Six bug families to test for</h2><p class="hint">Each card links to the Bug Lab tests that reproduce it.</p></div>
+    <div class="fams">
+      <div class="fam"><div class="glyph"><kbd>Space</kbd><span class="x">→</span><span>▶</span></div><h3>Hotkey leak</h3><p>A single-key shortcut such as <kbd>Space</kbd> or <kbd>1</kbd> fires while the IME is using that key to pick a candidate.</p><div class="row"><button type="button" class="chip" data-goto="ja-hotkey">JA-1</button><button type="button" class="chip" data-goto="ko-hotkey">KO-1</button><button type="button" class="chip" data-goto="zht-hotkey">ZH-2</button></div></div>
+      <div class="fam"><div class="glyph"><kbd>Enter</kbd><span class="x">→</span><span style="font:700 15px var(--f-body)">Sent early</span></div><h3>Enter submits early</h3><p>The <kbd>Enter</kbd> that confirms a conversion also sends the message or presses OK, or leaves a character behind.</p><div class="row"><button type="button" class="chip" data-goto="ja-enter">JA-2</button><button type="button" class="chip" data-goto="ko-enter">KO-2</button></div></div>
+      <div class="fam"><div class="glyph" lang="ja"><span>１２０</span><span class="x">≠</span><span>120</span></div><h3>Full-width leakage</h3><p>The IME produces <span lang="zh-CN">：</span> <span lang="ja">１２０</span> or curly quotes where the field only accepts ASCII.</p><div class="row"><button type="button" class="chip" data-goto="ja-fullwidth">JA-3</button><button type="button" class="chip" data-goto="zhs-fullwidth">ZH-1</button></div></div>
+      <div class="fam"><div class="glyph" lang="ko"><span class="draft">한글</span><span class="x">→</span><span>ㅎㅏㄴ</span></div><h3>Lost composition</h3><p>Moving focus, or re-rendering the field while you type, throws away or breaks the draft text.</p><div class="row"><button type="button" class="chip" data-goto="ja-lost">JA-4</button><button type="button" class="chip" data-goto="ko-lost">KO-4</button></div></div>
+      <div class="fam"><div class="glyph"><span class="box" aria-hidden="true"><i></i><b></b></span></div><h3>Candidate window position</h3><p>The list opens at a corner or far from the caret in custom-drawn, scaled or scrolled text fields. Checked by eye.</p><div class="row"><button type="button" class="chip" data-goto="ja-cand">JA-5</button></div></div>
+      <div class="fam"><div class="glyph" lang="ko"><span>ㅠ</span><span class="x">≠</span><span style="font-family:var(--f-mono)">b</span></div><h3>Key code vs character</h3><p>Shortcuts matched by typed character fail when Hangul, Zhuyin or kana mode changes what the key reports.</p><div class="row"><button type="button" class="chip" data-goto="ko-key">KO-3</button></div></div>
+    </div>
+    <p class="note">Everything here describes common behavior. Exact symptoms depend on the OS version, IME version, settings and the app's text engine. Treat each example as a pattern to try on your build and confirm before filing.</p>
   </div>
 </section>
 
+<!-- ================= COMPARE ================= -->
+<section class="view" id="v-compare" hidden>
+  <div class="sect-head"><div class="eyebrow">Side by side</div><h2>Microsoft IME and Apple IME</h2><p class="hint">Pick a language. Each panel shows how typing works and what is worth testing on that platform.</p></div>
+  <div class="langpick" id="cmp-tabs" role="group" aria-label="Language"></div>
+  <div id="cmp-root" style="display:flex;flex-direction:column;gap:16px"></div>
+</section>
+
+<!-- ================= LAB ================= -->
+<section class="view" id="v-lab" hidden>
+  <div class="labhead">
+    <div class="txt">
+      <div class="eyebrow">Hands-on · your real keyboard</div>
+      <h2>Bug Lab</h2>
+      <p class="hint">Each test is a small demo app with one bug pattern. Type with your own IME and follow the steps. The bench reads the real browser events and tells you whether the bug showed up.</p>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Your computer</span>
+      <div class="seg" id="plat" role="group" aria-label="Your computer">
+        <button type="button" data-p="win" aria-pressed="true">Windows · Microsoft IME</button>
+        <button type="button" data-p="mac" aria-pressed="false">macOS · Apple IME</button>
+      </div>
+      <div class="labprog"><div class="meter" aria-hidden="true"><i class="progbar"></i></div><span class="proghint"></span></div>
+    </div>
+  </div>
+  <div class="suite" id="sclist"></div>
+  <div class="scene" id="scene"></div>
+  <p class="note">The labs assume a standard US QWERTY keyboard. A JIS or Korean keyboard works too: its extra keys (半角/全角, かな, 한/영) do the same job as the switch keys listed. Function keys and Ctrl or Cmd shortcuts need a hardware keyboard.</p>
+</section>
+
+<!-- ================= INSPECTOR ================= -->
 <section class="view" id="v-inspector" hidden>
-  <div class="eyebrow">Your own keyboard</div>
-  <h2>Live Inspector</h2>
-  <p class="lede">Switch to any Chinese, Japanese or Korean input method on your device and type below. Every event the browser receives is listed, so you can see exactly where composition starts, changes and ends.</p>
-  <div class="card insp">
-    <label for="insp-in" class="hint">Type here with your IME. Try <kbd>Space</kbd>, <kbd>Enter</kbd>, <kbd>Tab</kbd>, number keys and <kbd>Esc</kbd> mid-composition.</label>
+  <div class="sect-head"><div class="eyebrow">Your own keyboard</div><h2>Live Inspector</h2><p class="hint">Switch to any Chinese, Japanese or Korean input method and type below. Every event the browser receives is listed, so you can see where composition starts, changes and ends.</p></div>
+  <div class="panel insp">
+    <label for="insp-in" class="hint">Try <kbd>Space</kbd>, <kbd>Enter</kbd>, <kbd>Tab</kbd>, number keys and <kbd>Esc</kbd> while the draft is underlined.</label>
     <textarea id="insp-in" lang="ja" placeholder="Type with an IME…"></textarea>
     <div class="row">
       <button type="button" class="btn sm" id="insp-clear">Clear log</button>
       <button type="button" class="btn sm" id="insp-copy">Copy log</button>
-      <label class="hint"><input type="checkbox" id="insp-keys" checked> Show key events</label>
+      <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="insp-keys" checked> Show key events</label>
       <span class="hint" id="insp-msg" role="status"></span>
     </div>
-    <div class="evwrap"><table><thead><tr><th>Event</th><th>data / key</th><th>isComposing</th><th>keyCode</th><th>code</th></tr></thead><tbody id="insp-log"></tbody></table></div>
   </div>
-  <p class="note">What to look for: an <kbd>Enter</kbd> keydown with <code>isComposing=false</code> arriving right after <code>compositionend</code> (the Safari-style order), a composition that ends with empty data after <kbd>Tab</kbd>, or the last Korean syllable appearing twice.</p>
+  <div class="evwrap"><table><thead><tr><th>Event</th><th>data / key</th><th>isComposing</th><th>keyCode</th><th>code</th></tr></thead><tbody id="insp-log"></tbody></table></div>
+  <p class="note">What to look for: an <kbd>Enter</kbd> keydown with <code>isComposing=false</code> right after <code>compositionend</code> (the Safari-style order), a composition that ends with empty data after <kbd>Tab</kbd>, or the last Korean syllable appearing twice.</p>
 </section>
-
 </main>
+</div>
 <script>
 /* ---------- Comparison data ---------- */
 var LANGS=[
@@ -738,44 +900,94 @@ var SC=[
 (function(){
 function $(i){return document.getElementById(i)}
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+var reduce=false;try{reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
 var isMac=/Mac|iPhone|iPad/.test(navigator.userAgent);
 var plat=store("ime-plat")==="mac"?"mac":store("ime-plat")==="win"?"win":(isMac?"mac":"win");
 var solved={};try{solved=JSON.parse(store("ime-solved2")||"{}")||{}}catch(e){solved={}}
 var cur=0,mode="",facts=[],hits=0,oks=0,evlog=[],cleanups=[];
 
 /* ---------- Navigation ---------- */
-var VIEWS=["guide","compare","lab","inspector"];
-var curView=null;
+var VIEWS=["guide","compare","lab","inspector"],curView=null;
 function show(v){
   var saved=null;try{saved=sessionStorage.getItem("ime-view")}catch(e){}
   var h=v||(location.hash||"").replace("#","")||saved||"";if(VIEWS.indexOf(h)<0)h="guide";
   if(h===curView)return;
   curView=h;
   try{sessionStorage.setItem("ime-view",h)}catch(e){}
-  VIEWS.forEach(function(v){$("v-"+v).hidden=v!==h});
-  document.querySelectorAll("nav.tabs button").forEach(function(a){if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  VIEWS.forEach(function(x){$("v-"+x).hidden=x!==h});
+  document.querySelectorAll("nav.views button").forEach(function(b){if(b.dataset.v===h)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   if(h==="lab")render();else cleanup();
   window.scrollTo(0,0);
 }
 window.addEventListener("hashchange",function(){show()});
-document.querySelectorAll("nav.tabs button").forEach(function(b){
-  b.addEventListener("click",function(){show(b.dataset.v)});
+document.querySelectorAll("nav.views button").forEach(function(b){b.addEventListener("click",function(){show(b.dataset.v)})});
+function openLab(id){
+  for(var i=0;i<SC.length;i++)if(SC[i].id===id)cur=i;
+  renderList();
+  if(curView==="lab")render();else show("lab");
+}
+$("v-guide").addEventListener("click",function(e){var b=e.target.closest("[data-goto]");if(b)openLab(b.dataset.goto)});
+
+/* ---------- Basics: live IME demo ---------- */
+var DEMO=[
+ {lang:"ja",mode:"あ",src:"Japanese · Romaji",steps:[["n","","n"],["i","","に"],["h","","にh"],["o","","にほ"],["n","","にほn"],["g","","にほんg"],["o","","にほんご"],["Space","","日本語",["日本語","二本後","にほんご"]],["Enter","日本語",""]]},
+ {lang:"ko",mode:"가",src:"Korean · 2-set",steps:[["g","","ㅎ"],["k","","하"],["s","","한"],["r","한","ㄱ"],["m","한","그"],["f","한","글"],["Space","한글 ",""]]},
+ {lang:"zh-CN",mode:"中",src:"Chinese (Simplified) · Pinyin",steps:[["z","","z"],["h","","zh"],["o","","zho"],["n","","zhon"],["g","","zhong",["中","种","重"]],["w","","zhong w",["中","种","重"]],["e","","zhong we",["中","种","重"]],["n","","zhong wen",["中文","中","种"]],["Space","中文",""]]},
+ {lang:"zh-TW",mode:"中",src:"Chinese (Traditional) · Zhuyin",steps:[["5","","ㄓ"],["j","","ㄓㄨ"],["/","","ㄓㄨㄥ"],["Space","","中"],["j","","中ㄨ"],["p","","中ㄨㄣ"],["6","","中文"],["Enter","中文",""]]}
+];
+var dL=0,dI=8,dKeys=[],dEv=[],dTimer=null;
+function dRender(){
+  var L=DEMO[dL],s=L.steps[Math.max(0,dI-1)];
+  $("demo-field").lang=L.lang;$("demo-mode").textContent=L.mode;$("demo-src").textContent=L.src;
+  document.querySelectorAll("#demo-langs button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.l===dL)});
+  $("demo-text").textContent=dI?s[1]:"";
+  var dr=$("demo-draft");dr.textContent=dI?s[2]:"";dr.hidden=!(dI&&s[2]);
+  var c=$("demo-cands");
+  if(dI&&s[3]){c.hidden=false;c.innerHTML=s[3].map(function(t,i){return '<span'+(i===0?' class="on"':'')+'><small>'+(i+1)+'</small>'+esc(t)+'</span>'}).join("")}else c.hidden=true;
+  $("demo-keys").innerHTML=dKeys.map(function(k,i){return '<kbd'+(i===dKeys.length-1?' class="hot"':'')+'>'+esc(k)+'</kbd>'}).join("");
+  $("demo-ev").innerHTML=dEv.slice(-3).map(function(e){return '<div'+(/^composition/.test(e)?' class="c"':'')+'>'+esc(e)+'</div>'}).join("");
+}
+function dStep(){
+  var L=DEMO[dL];
+  if(dI>=L.steps.length){dL=(dL+1)%DEMO.length;dI=0;dKeys=[];dEv=[];dRender();return 700}
+  var prev=dI?L.steps[dI-1]:["","",""],s=L.steps[dI];
+  dKeys.push(s[0]);
+  var composing=!!prev[2];
+  if(composing||/^[a-z0-9\/]$/.test(s[0]))dEv.push('keydown key='+(composing?'"Process"':JSON.stringify(s[0]))+' isComposing='+composing+(composing?' keyCode=229':''));
+  if(s[1]!==prev[1]&&prev[2])dEv.push('compositionend '+JSON.stringify(s[1].slice(prev[1].length).trim()||s[1]));
+  if(s[2]&&(!prev[2]||s[1]!==prev[1]))dEv.push('compositionstart ""');
+  if(s[2])dEv.push('compositionupdate '+JSON.stringify(s[2]));
+  dI++;dRender();
+  if(dI>=L.steps.length)return 1900;
+  return /Space|Enter/.test(s[0])?1100:430;
+}
+function dLoop(){
+  clearTimeout(dTimer);
+  var wait=500;
+  if(!document.hidden&&curView==="guide")wait=dStep();
+  dTimer=setTimeout(dLoop,wait);
+}
+$("demo-langs").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  dL=+b.dataset.l;dKeys=[];dEv=[];
+  if(reduce){var L=DEMO[dL];for(dI=0;dI<L.steps.length-1;){dStep()}dRender();return}
+  dI=0;dRender();clearTimeout(dTimer);dTimer=setTimeout(dLoop,300);
 });
+dKeys=["n","i","h","o","n","g","o","Space"];dEv=['compositionstart ""','compositionupdate "にほんご"','keydown key="Process" isComposing=true keyCode=229'];
 
 /* ---------- Compare ---------- */
-var cl=0;
+var NATIVE={zhcn:["简体中文","Chinese (Simplified)"],zhtw:["繁體中文","Chinese (Traditional)"],ja:["日本語","Japanese"],ko:["한국어","Korean"]};
+var cl=2;
 function renderCompare(){
   var L=LANGS[cl];
-  $("cmp-tabs").innerHTML=LANGS.map(function(x,i){return '<button type="button" data-i="'+i+'" aria-pressed="'+(i===cl)+'">'+esc(x.tab)+'</button>'}).join("");
-  function col(c,k,label){return '<div class="col '+k+'"><h3><span>'+esc(c.name)+'</span><span class="pill '+k+'">'+label+'</span></h3><div class="hint" lang="'+L.lang+'">'+esc(c.native)+'</div><div class="typed" lang="'+L.lang+'">'+esc(c.typed)+'</div><ul>'+c.items.map(function(i){return '<li lang="'+L.lang+'">'+esc(i)+'</li>'}).join("")+'</ul></div>'}
-  $("cmp-root").innerHTML='<div class="side">'+col(L.ms,"ms","Windows")+col(L.mac,"mac","macOS")+'</div><div class="bugcase" style="margin-top:14px"><b>Typical trouble spots</b><span>'+esc(L.bug)+'</span></div><p class="note" style="margin-top:14px">Key names and defaults can change between OS versions and user settings. Confirm on the build you are testing.</p>';
+  $("cmp-tabs").innerHTML=LANGS.map(function(x,i){var n=NATIVE[x.id]||[x.tab,""];return '<button type="button" data-i="'+i+'" aria-pressed="'+(i===cl)+'"><b lang="'+x.lang+'">'+n[0]+'</b><span>'+esc(n[1])+'</span></button>'}).join("");
+  function col(c,k,label){return '<div class="oswin '+k+'"><div class="oswin-bar"><span class="chip '+k+'">'+label+'</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div><div class="oswin-body"><h3>'+esc(c.name)+'</h3><div class="hint" lang="'+L.lang+'">'+esc(c.native)+'</div><div class="typed" lang="'+L.lang+'">'+esc(c.typed)+'</div><ul>'+c.items.map(function(i){return '<li lang="'+L.lang+'">'+esc(i)+'</li>'}).join("")+'</ul></div></div>'}
+  $("cmp-root").innerHTML='<div class="osgrid">'+col(L.ms,"win","Windows")+col(L.mac,"mac","macOS")+'</div><div class="trouble"><span class="ic" aria-hidden="true">!</span><div><h3>Typical trouble spots</h3><p class="hint" lang="'+L.lang+'">'+esc(L.bug)+'</p></div></div><p class="note">Key names and defaults can change between OS versions and user settings. Confirm on the build you are testing.</p>';
 }
 $("cmp-tabs").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;cl=+b.dataset.i;renderCompare()});
 
 /* ---------- Bug Lab engine ---------- */
-function tok(s){
-  return String(s).replace(/\{ENTER\}/g,plat==="mac"?"Return":"Enter").replace(/\{MOD\}/g,plat==="mac"?"Cmd":"Ctrl").replace(/\{F9\}/g,plat==="mac"?"Fn+F9":"F9");
-}
+function tok(s){return String(s).replace(/\{ENTER\}/g,plat==="mac"?"Return":"Enter").replace(/\{MOD\}/g,plat==="mac"?"Cmd":"Ctrl").replace(/\{F9\}/g,plat==="mac"?"Fn+F9":"F9")}
 function cleanup(){cleanups.forEach(function(f){try{f()}catch(e){}});cleanups=[]}
 var ctx={
   mock:null,
@@ -786,7 +998,7 @@ var ctx={
   hit:function(t){hits++;facts.push(["bad",t]);var sc=SC[cur];if(!solved[sc.id]){solved[sc.id]=1;store("ime-solved2",JSON.stringify(solved));renderList()}paintResult()},
   ok:function(t){oks++;facts.push(["good",t]);paintResult()},
   note:function(t){facts.push(["",t]);paintResult()},
-  log:function(t,cls){evlog.push([t,cls||""]);if(evlog.length>14)evlog.shift();paintLog()},
+  log:function(t,cls){evlog.push([t,cls||""]);if(evlog.length>16)evlog.shift();paintLog()},
   watch:function(el){
     ["compositionstart","compositionupdate","compositionend"].forEach(function(n){ctx.on(el,n,function(e){ctx.log(n+"  "+JSON.stringify(e.data==null?"":e.data),"c")})});
     ctx.on(el,"keydown",function(e){ctx.log("keydown  key="+JSON.stringify(e.key)+"  code="+e.code+"  isComposing="+e.isComposing+"  keyCode="+e.keyCode,"k")});
@@ -794,15 +1006,19 @@ var ctx={
   }
 };
 function renderList(){
-  var out="",last="",n=0;
-  SC.forEach(function(sc,i){
-    if(solved[sc.id])n++;
-    if(sc.grp!==last){last=sc.grp;out+='<div class="grp">'+esc(GRP[sc.grp])+'</div>'}
-    out+='<button type="button" data-i="'+i+'"'+(i===cur?' aria-current="true"':'')+'><span class="lg">'+sc.code+'</span><span>'+esc(sc.title)+'</span><span class="st'+(solved[sc.id]?' ok':'')+'">'+(solved[sc.id]?"✓":"")+'</span></button>';
+  var n=0,out="";
+  ["ja","ko","zh"].forEach(function(g){
+    out+='<div class="grp"><span class="lbl">'+esc(GRP[g])+'</span>';
+    SC.forEach(function(sc,i){
+      if(sc.grp!==g)return;
+      out+='<button type="button" data-i="'+i+'" title="'+esc(sc.title)+'"'+(i===cur?' aria-current="true"':'')+'><span class="dot'+(solved[sc.id]?' ok':'')+'" aria-hidden="true"></span><b>'+sc.code+'</b><span>'+esc(sc.fam)+'</span>'+(solved[sc.id]?'<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">reproduced</span>':'')+'</button>';
+    });
+    out+='</div>';
   });
+  SC.forEach(function(sc){if(solved[sc.id])n++});
   $("sclist").innerHTML=out;
-  $("prog").style.width=(n/SC.length*100)+"%";
-  $("proghint").textContent=n+" of "+SC.length+" bugs reproduced on your machine";
+  document.querySelectorAll(".progbar").forEach(function(b){b.style.width=(n/SC.length*100)+"%"});
+  document.querySelectorAll(".proghint").forEach(function(t){t.textContent=n+" of "+SC.length+" bugs reproduced"});
 }
 function render(){
   cleanup();
@@ -810,16 +1026,22 @@ function render(){
   var addPath=plat==="mac"?"System Settings → Keyboard → Text Input → Edit… → + → choose "+S.name+" → add \""+P.src+"\".":"Settings → Time & language → Language & region → Add a language → choose "+S.name+" → Next → Install. Keep the keyboard \""+P.src+"\" in the language options.";
   mode=sc.modes[0][0];
   $("scene").innerHTML=
-   '<div class="row"><span class="pill">'+sc.code+'</span><span class="pill">'+esc(sc.fam)+'</span></div>'+
-   '<h3 style="font-size:19px">'+esc(sc.title)+'</h3><p>'+esc(tok(sc.about))+'</p>'+
-   '<div class="setupcard"><div class="lbl">Set up your keyboard · '+(plat==="mac"?"macOS":"Windows")+'</div>'+
-   '<dl class="kv"><dt>Input source</dt><dd lang="'+sc.lang+'">'+esc(P.src)+'</dd><dt>Layout</dt><dd>'+esc(P.layout)+'</dd><dt>Mode</dt><dd>'+esc(P.mode)+'</dd><dt>Switch with</dt><dd>'+esc(P.sw)+'</dd></dl>'+
-   '<details><summary>This input source is not installed</summary><p>'+esc(addPath)+'</p></details></div>'+
-   '<div><div class="lbl" style="margin-bottom:8px">Steps</div><ol class="steps">'+sc.steps.map(function(s){return '<li><span class="do" lang="'+sc.lang+'">'+esc(tok(s[0]))+'</span><span class="see">You should see: '+esc(tok(s[1]))+'</span></li>'}).join("")+'</ol></div>'+
-   '<div class="modebar"><span class="hint">Demo app version:</span><div class="seg" id="modes" role="group" aria-label="Demo app version">'+sc.modes.map(function(m,i){return '<button type="button" data-m="'+m[0]+'" aria-pressed="'+(i===0)+'">'+esc(m[1])+'</button>'}).join("")+'</div></div>'+
-   '<div class="mock" id="mock"></div><div id="result"></div>'+
-   '<div><div class="lbl" style="margin-bottom:6px">Events your browser received</div><ul class="log" id="evlog" aria-label="Event log"></ul></div>'+
-   '<details><summary>Root cause and fix</summary><p>'+esc(sc.cause)+'</p><p>'+esc(sc.fix)+'</p></details>';
+   '<div class="brief">'+
+    '<div class="scene-title"><div class="row"><span class="chip">'+sc.code+'</span><span class="chip">'+esc(sc.fam)+'</span></div><h2>'+esc(sc.title)+'</h2><p class="hint">'+esc(tok(sc.about))+'</p></div>'+
+    '<div class="setupcard"><span class="lbl">Before you start · '+(plat==="mac"?"macOS":"Windows")+' keyboard</span>'+
+     '<div class="src" lang="'+sc.lang+'">'+esc(P.src)+'</div>'+
+     '<dl class="kv"><dt>Layout</dt><dd>'+esc(P.layout)+'</dd><dt>Mode</dt><dd lang="'+sc.lang+'">'+esc(P.mode)+'</dd><dt>Switch with</dt><dd lang="'+sc.lang+'">'+esc(P.sw)+'</dd></dl>'+
+     '<details><summary>This input source is not installed</summary><p>'+esc(addPath)+'</p></details></div>'+
+    '<div class="stepcard"><div class="row" style="justify-content:space-between"><span class="lbl">Steps</span><span class="hint">Tick each step as you go</span></div><ol class="steps">'+
+     sc.steps.map(function(s,i){var id="st-"+sc.id+"-"+i;return '<li style="position:relative"><input type="checkbox" id="'+id+'"><label for="'+id+'"><span class="num">'+(i+1)+'</span><span class="do" lang="'+sc.lang+'">'+esc(tok(s[0]))+'</span><span class="see" lang="'+sc.lang+'">You should see: '+esc(tok(s[1]))+'</span></label></li>'}).join("")+
+    '</ol></div>'+
+    '<details><summary>Root cause and fix</summary><p>'+esc(sc.cause)+'</p><p>'+esc(sc.fix)+'</p></details>'+
+   '</div>'+
+   '<div class="bench">'+
+    '<div class="benchcard"><div class="benchbar"><span class="lbl">Test bench · demo app</span><div class="seg" id="modes" role="group" aria-label="Demo app version">'+sc.modes.map(function(m,i){return '<button type="button" data-m="'+m[0]+'" aria-pressed="'+(i===0)+'">'+esc(m[1])+'</button>'}).join("")+'</div></div>'+
+     '<div class="mock" id="mock"></div><div id="result"></div></div>'+
+    '<div class="evcard"><span class="lbl">Events your browser received</span><ul class="log" id="evlog" aria-label="Event log"></ul></div>'+
+   '</div>';
   start();
 }
 function start(){
@@ -831,7 +1053,7 @@ function start(){
 }
 function paintLog(){
   var el=$("evlog");if(!el)return;
-  el.innerHTML=evlog.length?evlog.map(function(l){return '<li class="'+l[1]+'">'+esc(l[0])+'</li>'}).join(""):'<li>Nothing yet. Click a box above and start typing.</li>';
+  el.innerHTML=evlog.length?evlog.map(function(l){return '<li class="'+l[1]+'">'+esc(l[0])+'</li>'}).join(""):'<li>Nothing yet. Click the box on the bench and start typing.</li>';
   el.scrollTop=el.scrollHeight;
 }
 function report(){
@@ -844,10 +1066,10 @@ function paintResult(){
   var el=$("result");if(!el)return;
   var st=hits?"bug":oks?"ok":"wait";
   var head={wait:"Waiting for you",bug:"Bug reproduced",ok:"Handled correctly"}[st];
-  var sub={wait:"Follow the steps. This box updates from the real events your keyboard produces.",bug:"The app version you selected did the wrong thing. Switch to the fixed version and repeat the steps to compare.",ok:"The app behaved correctly for what you did. Try the other app version to compare."}[st];
+  var sub={wait:"Follow the steps. This updates from the real events your keyboard produces.",bug:"This app version did the wrong thing. Switch to the fixed version and repeat the steps to compare.",ok:"The app behaved correctly for what you did. Try the other app version to compare."}[st];
   var f=facts.slice(-6).reverse().map(function(x){return '<li class="'+x[0]+'">'+esc(x[1])+'</li>'}).join("");
-  el.innerHTML='<div class="verdict '+st+'" aria-live="polite"><b>'+head+'</b><span class="hint">'+sub+'</span>'+(f?'<ul class="facts">'+f+'</ul>':'')+'</div>'+
-    (hits?'<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><div class="lbl">Bug report draft</div><pre class="report" id="rep">'+esc(report())+'</pre><div class="row"><button type="button" class="btn sm primary" id="copyrep">Copy report</button></div></div>':'');
+  el.innerHTML='<div class="verdict '+st+'" aria-live="polite"><div class="vh"><i aria-hidden="true"></i><b>'+head+'</b></div><span class="hint">'+sub+'</span>'+(f?'<ul class="facts">'+f+'</ul>':'')+'</div>'+
+    (hits?'<div class="reportbox"><div class="row" style="justify-content:space-between"><span class="lbl">Bug report draft</span><button type="button" class="btn sm primary" id="copyrep">Copy report</button></div><pre class="report" id="rep">'+esc(report())+'</pre></div>':'');
 }
 $("scene").addEventListener("click",function(e){
   var b=e.target.closest("[data-m]");
@@ -859,9 +1081,9 @@ $("scene").addEventListener("click",function(e){
   }
 });
 $("sclist").addEventListener("click",function(e){
-  var b=e.target.closest("button");if(!b)return;
+  var b=e.target.closest("button[data-i]");if(!b)return;
   cur=+b.dataset.i;renderList();render();
-  if(window.innerWidth<=760)$("scene").scrollIntoView({block:"start"});
+  if(window.innerWidth<=1180)$("scene").scrollIntoView({block:"start"});
 });
 $("plat").addEventListener("click",function(e){
   var b=e.target.closest("button");if(!b)return;
@@ -874,7 +1096,7 @@ $("plat").addEventListener("click",function(e){
 var ta=$("insp-in"),tb=$("insp-log"),rows=[];
 function addRow(cls,ev,d,ic,kc,code){
   var tr=document.createElement("tr");tr.className=cls;
-  [ev,d,ic,kc,code].forEach(function(t){var td=document.createElement("td");td.textContent=t;tr.appendChild(td)});
+  [ev,d,ic,kc,code].forEach(function(t,i){var td=document.createElement("td");if(i===0){var s=document.createElement("span");s.textContent=t;td.appendChild(s)}else td.textContent=t;if(i===2&&t==="true")td.className="t";tr.appendChild(td)});
   tb.appendChild(tr);rows.push([ev,d,ic,kc,code].join("\t"));
   if(tb.children.length>400){tb.removeChild(tb.firstChild);rows.shift()}
   var w=tb.parentElement.parentElement;w.scrollTop=w.scrollHeight;
@@ -889,5 +1111,9 @@ $("insp-copy").onclick=function(){var t="event\tdata\tisComposing\tkeyCode\tcode
 /* ---------- Boot ---------- */
 document.querySelectorAll("#plat button").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.p===plat)});
 renderCompare();renderList();show();
+if(!reduce)dTimer=setTimeout(dLoop,2200);
 })();
 </script>
+
+</body>
+</html>
