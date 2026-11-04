@@ -3,514 +3,478 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>IME Field Guide</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
 <style>
-/* Layout concept: an input-method workbench. Floating sidebar for the four views; blue draft text is the one recurring motif; cobalt marks anything you can press. */
+/* One accent (blue = draft text and anything you can press), red/green only for results. System fonts, CJK picked by lang. */
 :root{
-  --paper:#F3F4F9; --panel:#FFFFFF; --panel-2:#E9EBF4; --ink:#12162B; --ink-2:#4B5272; --rule:#D8DBE8;
-  --cobalt:#2B46E8; --on-cobalt:#FFFFFF; --cobalt-soft:#E3E7FF;
-  --marker:#FFE15A; --marker-ink:#2B2200;
-  --bad:#CF3A31; --good:#13895A; --warn:#A06400; --win:#1C6FCF; --mac:#AE3684;
-  --shadow:0 1px 2px rgba(18,22,43,.06),0 8px 24px -12px rgba(18,22,43,.18);
-  --f-display:"Archivo","Figtree",system-ui,sans-serif;
-  --f-body:"Figtree","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Sans TC",system-ui,-apple-system,"Segoe UI","Hiragino Sans","PingFang SC","Malgun Gothic","Yu Gothic",sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,"Noto Sans JP","Noto Sans KR",monospace;
-  --f-cjk:"Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Sans TC","Hiragino Sans","PingFang SC","Malgun Gothic","Yu Gothic",sans-serif;
+  color-scheme:light dark;
+  --bg:#FFFFFF; --soft:#F4F5F8; --fg:#14161F; --muted:#575C6E; --line:#E2E4EA;
+  --accent:#2B46E8; --on-accent:#FFFFFF; --accent-soft:#EDF0FF;
+  --bad:#C4342B; --good:#11804E;
+  --f:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --f-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#0B0E1B; --panel:#131833; --panel-2:#1B2144; --ink:#E9ECF8; --ink-2:#A0A7C6; --rule:#29305A;
-  --cobalt:#8A9BFF; --on-cobalt:#0B0E1B; --cobalt-soft:#232B5E;
-  --marker:#FFD94A; --marker-ink:#241C00;
-  --bad:#FF8C82; --good:#5FD69D; --warn:#F2BC5E; --win:#73B3FF; --mac:#F28FCB;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7); color-scheme:dark}}
-:root[data-theme="dark"]{
-  --paper:#0B0E1B; --panel:#131833; --panel-2:#1B2144; --ink:#E9ECF8; --ink-2:#A0A7C6; --rule:#29305A;
-  --cobalt:#8A9BFF; --on-cobalt:#0B0E1B; --cobalt-soft:#232B5E;
-  --marker:#FFD94A; --marker-ink:#241C00;
-  --bad:#FF8C82; --good:#5FD69D; --warn:#F2BC5E; --win:#73B3FF; --mac:#F28FCB;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7); color-scheme:dark}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E1017; --soft:#171A24; --fg:#E8EAF2; --muted:#A4A9BB; --line:#2A2E3B;
+  --accent:#8C9CFF; --on-accent:#0E1017; --accent-soft:#1C2140;
+  --bad:#FF8A80; --good:#5DD39E;
+}}
+:where(:lang(ja)){font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,"Noto Sans CJK JP","Noto Sans JP",sans-serif}
+:where(:lang(ko)){font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans CJK KR","Noto Sans KR",sans-serif}
+:where(:lang(zh-CN)){font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC",sans-serif}
+:where(:lang(zh-TW)){font-family:"PingFang TC","Microsoft JhengHei","Noto Sans CJK TC","Noto Sans TC",sans-serif}
 
 *{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);font:16px/1.6 var(--f-body);padding-block:16px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:40}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 var(--f);-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+a{color:var(--accent)}
 button{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
-p{margin:0;max-width:66ch}
-h1,h2,h3{margin:0;text-wrap:balance}
-h1{font:800 clamp(34px,5.2vw,58px)/1 var(--f-display);font-stretch:118%;letter-spacing:-.015em}
-h2{font:700 clamp(22px,2.6vw,28px)/1.15 var(--f-display);font-stretch:112%;letter-spacing:-.01em}
-h3{font:700 17px/1.3 var(--f-body)}
-code{font:500 .86em var(--f-mono);background:var(--panel-2);padding:1px 6px;border-radius:5px}
-kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.9em;font:600 12px/1 var(--f-mono);background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-bottom-width:3px;border-radius:6px;padding:4px 6px;white-space:nowrap;vertical-align:1px}
-.cjk{font-family:var(--f-cjk)}
-.draft{color:var(--cobalt)}
-.eyebrow{font:600 11.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--cobalt)}
-.lede{font-size:18px;color:var(--ink-2);max-width:58ch}
-.hint{font-size:13.5px;color:var(--ink-2)}
-.lbl{font:600 11px var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
-.note{font-size:14px;color:var(--ink-2);background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px 12px 16px;max-width:76ch;position:relative}
-.note::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--cobalt)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+p{margin:0;max-width:68ch}
+h1,h2,h3{margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:clamp(28px,4vw,36px);font-weight:700;letter-spacing:-.02em}
+h2{font-size:22px;font-weight:650;letter-spacing:-.01em}
+h3{font-size:16px;font-weight:600}
+code{font:.88em var(--f-mono);background:var(--soft);padding:1px 5px;border-radius:4px}
+kbd{display:inline-block;min-width:1.7em;text-align:center;font:12.5px/1.5 var(--f-mono);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;white-space:nowrap}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.lbl{font-size:13px;font-weight:600;color:var(--muted)}
+.draft{color:var(--accent)}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ---------- shell ---------- */
-.shell{display:grid;grid-template-columns:236px minmax(0,1fr);gap:28px;max-width:1360px;margin:0 auto;align-items:start}
-.side{position:sticky;top:calc(16px + env(safe-area-inset-top,0px));height:calc(100dvh - 32px - env(safe-area-inset-top,0px));background:var(--panel);border:1px solid var(--rule);border-radius:18px;padding:20px 14px;display:flex;flex-direction:column;gap:22px;box-shadow:var(--shadow)}
-.brand{display:flex;flex-direction:column;gap:6px;padding:0 6px}
-.brand b{font:800 22px/1 var(--f-display);font-stretch:120%;letter-spacing:-.01em}
-.brand b span{color:var(--cobalt)}
-.brand small{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
-nav.views{display:flex;flex-direction:column;gap:4px}
-nav.views button{display:grid;grid-template-columns:28px minmax(0,1fr);gap:2px 10px;align-items:center;text-align:left;background:none;border:0;border-radius:11px;padding:10px;cursor:pointer;color:var(--ink-2)}
-nav.views button .n{grid-row:1/3;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:600 12px var(--f-mono);background:var(--panel-2);color:var(--ink-2)}
-nav.views button .t{font-weight:600;color:var(--ink);font-size:15px;line-height:1.2}
-nav.views button .d{font-size:12.5px;line-height:1.3}
-nav.views button:hover{background:var(--panel-2)}
-nav.views button[aria-current="page"]{background:var(--cobalt-soft)}
-nav.views button[aria-current="page"] .n{background:var(--cobalt);color:var(--on-cobalt)}
-.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:12px 8px 2px;border-top:1px solid var(--rule)}
-.meter{height:8px;border-radius:8px;background:var(--panel-2);overflow:hidden}
-.meter i{display:block;height:100%;width:0;background:var(--cobalt);border-radius:8px;transition:width .4s}
-main{min-width:0}
-section.view{display:flex;flex-direction:column;gap:28px;padding-top:8px}
-@media (max-width:900px){
-  body{padding-top:0}
-  .shell{display:block}
-  .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;flex-direction:column;gap:8px;padding:12px 12px 8px;border-radius:0 0 16px 16px;border-top:0;margin:0 calc(-1*max(16px,env(safe-area-inset-right,0px))) 20px calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:30}
-  .brand{flex-direction:row;align-items:baseline;gap:10px;padding:0}
-  .brand b{font-size:19px}
-  nav.views{flex-direction:row;overflow-x:auto;gap:4px;scrollbar-width:none}
-  nav.views button{grid-template-columns:auto;padding:8px 12px;white-space:nowrap}
-  nav.views button .n,nav.views button .d{display:none}
-  .side-foot{display:none}
-}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top-in{max-width:1200px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:20px;min-height:56px}
+.brand{font-weight:700;white-space:nowrap}
+.brand span{color:var(--accent)}
+nav.views{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+nav.views::-webkit-scrollbar{display:none}
+nav.views a{padding:6px 10px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:15px;white-space:nowrap}
+nav.views a:hover{color:var(--fg)}
+nav.views a[aria-current="page"]{color:var(--fg);background:var(--soft);font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:36px max(20px,env(safe-area-inset-right,0px)) 56px max(20px,env(safe-area-inset-left,0px))}
+section.view{display:flex;flex-direction:column;gap:44px}
+.sect{display:flex;flex-direction:column;gap:14px}
+.head{display:flex;flex-direction:column;gap:6px}
+footer{max-width:1200px;margin:0 auto;padding:20px max(20px,env(safe-area-inset-right,0px)) calc(32px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:6px}
+@media (max-width:640px){.top-in{flex-direction:column;align-items:flex-start;gap:0;padding-top:8px}nav.views{margin-left:-10px;width:calc(100% + 10px)}main{padding-top:24px}}
 
-/* ---------- shared bits ---------- */
-.panel{background:var(--panel);border:1px solid var(--rule);border-radius:16px}
-.btn{display:inline-flex;align-items:center;gap:6px;font:600 14px var(--f-body);background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:10px;padding:8px 14px;min-height:38px;cursor:pointer}
-.btn:hover{border-color:var(--cobalt)}
-.btn.primary{background:var(--cobalt);color:var(--on-cobalt);border-color:var(--cobalt)}
-.btn.sm{padding:6px 12px;min-height:34px;font-size:13.5px}
-.seg{display:inline-flex;flex-wrap:wrap;gap:3px;background:var(--panel-2);border-radius:12px;padding:3px}
-.seg button{background:none;border:0;border-radius:9px;padding:7px 12px;font-weight:600;font-size:14px;color:var(--ink-2);cursor:pointer;min-height:36px;text-align:left}
-.seg button:hover{color:var(--ink)}
-.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
-.chip{display:inline-flex;align-items:center;gap:6px;font:600 11.5px var(--f-mono);padding:3px 9px;border-radius:99px;border:1px solid var(--rule);color:var(--ink-2);background:var(--panel);white-space:nowrap}
+/* ---------- shared controls ---------- */
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 12px;min-height:34px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.link{border-color:transparent;background:none;color:var(--muted);padding:6px 4px}
+.btn.link:hover{color:var(--fg)}
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;border:1px solid var(--line);border-radius:8px;padding:2px}
+.seg button{background:none;border:0;border-radius:6px;padding:5px 10px;font-size:14px;color:var(--muted);cursor:pointer;min-height:32px;text-align:left}
+.seg button:hover{color:var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--soft);color:var(--fg);font-weight:600}
+.chip{display:inline-flex;align-items:center;font:12.5px/1.6 var(--f-mono);padding:0 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--bg);white-space:nowrap}
 button.chip{cursor:pointer}
-button.chip:hover{border-color:var(--cobalt);color:var(--cobalt)}
-.chip.win{color:var(--win);border-color:currentColor}
-.chip.mac{color:var(--mac);border-color:currentColor}
-.tbl{overflow-x:auto;border:1px solid var(--rule);border-radius:14px;background:var(--panel)}
-.tbl table{border-collapse:collapse;width:100%;min-width:620px;font-size:14.5px}
-.tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
-.tbl th{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:var(--panel-2)}
-.tbl tr:last-child td{border-bottom:0}
-.tbl td:first-child{font-weight:600}
+button.chip:hover{border-color:var(--accent);color:var(--accent)}
+.tw{overflow-x:auto}
+table.t{border-collapse:collapse;width:100%;font-size:15px}
+table.t th,table.t td{text-align:left;vertical-align:top;padding:10px 16px 10px 0;border-bottom:1px solid var(--line)}
+table.t th{font-size:13px;font-weight:600;color:var(--muted)}
+table.t td:first-child{font-weight:600}
+table.t.wide{min-width:640px}
+details>summary{cursor:pointer;font-weight:600}
+details>*:not(summary){margin-top:8px}
+.note{font-size:14.5px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-</style>
-</head>
-<body>
 
-<style>
-/* ---------- Basics: hero ---------- */
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:32px;align-items:center}
-.hero-text{display:flex;flex-direction:column;gap:16px}
-@media (max-width:1100px){.hero{grid-template-columns:minmax(0,1fr)}}
-.imewin{background:var(--panel);border:1px solid var(--rule);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
-.imewin-top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--panel-2);flex-wrap:wrap}
-.imewin-src{font:600 12px var(--f-mono);color:var(--ink-2);display:flex;align-items:center;gap:8px}
-.imewin-src .mode{display:inline-flex;width:22px;height:22px;border-radius:6px;background:var(--ink);color:var(--paper);align-items:center;justify-content:center;font:700 12px var(--f-cjk)}
-.imewin-langs{display:flex;gap:3px}
-.imewin-langs button{background:none;border:1px solid transparent;border-radius:7px;padding:2px 8px;font:600 12px var(--f-cjk);color:var(--ink-2);cursor:pointer}
-.imewin-langs button[aria-pressed="true"]{background:var(--panel);border-color:var(--rule);color:var(--ink)}
-.imewin-body{padding:22px 18px 16px;display:flex;flex-direction:column;gap:16px}
-.imefield{position:relative;min-height:168px;border:1px solid var(--rule);border-radius:12px;padding:14px 14px;font:400 28px/1.3 var(--f-cjk);background:var(--paper)}
-.imefield .caret{display:inline-block;width:2px;height:1.05em;background:var(--cobalt);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(1) infinite}
+/* ---------- Basics ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:40px;align-items:center}
+.hero .stack{gap:14px}
+.lede{font-size:18px;color:var(--muted)}
+@media (max-width:960px){.hero{grid-template-columns:minmax(0,1fr)}}
+.demo{border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.demo-top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);flex-wrap:wrap}
+.demo-top .mode{display:inline-flex;width:20px;height:20px;border-radius:4px;background:var(--fg);color:var(--bg);align-items:center;justify-content:center;font-size:12px;margin-right:6px;vertical-align:-4px}
+.demo-langs{display:flex;gap:2px}
+.demo-langs button{background:none;border:1px solid transparent;border-radius:5px;padding:0 7px;font-size:13px;color:var(--muted);cursor:pointer}
+.demo-langs button[aria-pressed="true"]{border-color:var(--line);color:var(--fg)}
+.demo-body{padding:14px;display:flex;flex-direction:column;gap:12px}
+.imefield{position:relative;min-height:150px;border-radius:8px;background:var(--soft);padding:12px 14px;font-size:26px;line-height:1.3}
+.imefield .draft{text-decoration:underline dotted;text-underline-offset:5px}
+.imefield .caret{display:inline-block;width:2px;height:1.05em;background:var(--accent);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .imefield .dwrap{position:relative;display:inline}
-.cands{position:absolute;left:0;top:calc(100% + 8px);z-index:2;background:var(--panel);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow);padding:4px;display:flex;flex-direction:column;min-width:130px;font-size:17px;line-height:1.3}
-.cands span{display:flex;gap:10px;align-items:baseline;padding:4px 10px;border-radius:6px;white-space:nowrap}
-.cands span small{font:500 11px var(--f-mono);color:var(--ink-2)}
-.cands span.on{background:var(--cobalt);color:var(--on-cobalt)}
-.cands span.on small{color:var(--on-cobalt)}
-.keystrip{display:flex;flex-wrap:wrap;gap:5px;min-height:30px;align-items:center}
-.keystrip kbd{transition:transform .15s,background .15s}
-.keystrip kbd.hot{background:var(--cobalt);color:var(--on-cobalt);border-color:var(--cobalt);transform:translateY(1px)}
-.evtick{font:500 12px/1.65 var(--f-mono);color:var(--ink-2);background:var(--panel-2);border-radius:10px;padding:8px 12px;min-height:72px;overflow:hidden}
+.cands{position:absolute;left:0;top:calc(100% + 6px);z-index:2;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px;display:flex;flex-direction:column;min-width:120px;font-size:16px;line-height:1.3}
+.cands span{display:flex;gap:8px;align-items:baseline;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.cands small{font:11px var(--f-mono);color:var(--muted)}
+.cands span.on{background:var(--accent);color:var(--on-accent)}
+.cands span.on small{color:var(--on-accent)}
+.keystrip{display:flex;flex-wrap:wrap;gap:4px;min-height:26px;align-items:center}
+.keystrip kbd.hot{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.evtick{font:12.5px/1.65 var(--f-mono);color:var(--muted);min-height:62px;overflow:hidden}
 .evtick div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.evtick div:last-child{color:var(--ink)}
-.evtick .c{color:var(--cobalt)}
-
-/* ---------- Basics: pipeline ---------- */
-.pipe{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-@media (max-width:820px){.pipe{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:460px){.pipe{grid-template-columns:minmax(0,1fr)}}
-.stage{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;position:relative;min-width:0}
-.stage .k{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--cobalt)}
-.stage .vis{min-height:58px;display:flex;align-items:center;flex-wrap:wrap;gap:4px;font:400 22px/1.3 var(--f-cjk)}
-.stage .vis .mini{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:8px;font-size:14px;padding:2px;background:var(--panel)}
-.stage .vis .mini span{padding:1px 8px;border-radius:5px}
-.stage .vis .mini span:first-child{background:var(--cobalt);color:var(--on-cobalt)}
-.stage p{font-size:14px;color:var(--ink-2)}
-.sect{display:flex;flex-direction:column;gap:14px}
-.sect-head{display:flex;flex-direction:column;gap:6px}
-
-/* ---------- Basics: families ---------- */
-.fams{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px}
-.fam{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.fam .glyph{height:64px;border-radius:12px;background:var(--panel-2);display:flex;align-items:center;justify-content:center;gap:8px;font:500 22px var(--f-cjk);color:var(--ink);overflow:hidden}
-.fam .glyph .x{font:700 16px var(--f-mono);color:var(--bad)}
-.fam .glyph .box{position:relative;width:132px;height:44px;border:1px dashed var(--ink-2);border-radius:6px}
-.fam .glyph .box i{position:absolute;left:8px;top:4px;width:44px;height:16px;border-radius:4px;background:var(--cobalt)}
-.fam .glyph .box b{position:absolute;left:62px;bottom:6px;width:2px;height:16px;background:var(--ink)}
-.fam p{font-size:14.5px;color:var(--ink-2)}
-.fam .row{margin-top:auto}
+.evtick div:last-child{color:var(--fg)}
+.evtick .c{color:var(--accent)}
+.fams{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));column-gap:36px}
+.fam{padding:16px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.fam .ex{font:13px var(--f-mono);color:var(--muted)}
+.fam .ex b{color:var(--bad);font-weight:600}
+.fam p{font-size:15px;color:var(--muted)}
 
 /* ---------- Compare ---------- */
-.langpick{display:flex;flex-wrap:wrap;gap:8px}
-.langpick button{display:flex;flex-direction:column;align-items:flex-start;gap:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:8px 14px;cursor:pointer;min-width:120px}
-.langpick button b{font:700 18px var(--f-cjk)}
-.langpick button span{font-size:12.5px;color:var(--ink-2)}
-.langpick button[aria-pressed="true"]{border-color:var(--cobalt);box-shadow:0 0 0 1px var(--cobalt)}
-.osgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
-.oswin{background:var(--panel);border:1px solid var(--rule);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
-.oswin-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--rule)}
-.oswin-bar .dots{display:flex;gap:6px}
-.oswin-bar .dots i{width:10px;height:10px;border-radius:50%;background:var(--rule)}
-.oswin.win .oswin-bar{border-top:3px solid var(--win)}
-.oswin.mac .oswin-bar{border-top:3px solid var(--mac)}
-.oswin-body{padding:16px;display:flex;flex-direction:column;gap:12px}
-.oswin-body h3{font-size:18px}
-.typed{font:500 14px/1.8 var(--f-mono);background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px 12px;overflow-x:auto;white-space:pre}
-.oswin ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14.5px}
-.trouble{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px}
-.trouble .ic{flex:none;width:34px;height:34px;border-radius:10px;background:var(--bad);color:var(--panel);display:flex;align-items:center;justify-content:center;font:800 18px var(--f-display)}
-.trouble div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.example{font:14px/1.8 var(--f-mono);background:var(--soft);border-radius:8px;padding:10px 14px;margin:0;overflow-x:auto;white-space:pre}
+.cmp td:not(:first-child){min-width:220px}
 
 /* ---------- Lab ---------- */
 .labhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
-.labhead .txt{display:flex;flex-direction:column;gap:10px;max-width:640px}
-.labhead .ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
-.suite{display:flex;flex-direction:column;gap:10px}
-.suite .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.suite .grp>.lbl{width:140px;flex:none}
-@media (max-width:620px){.suite .grp>.lbl{width:100%}}
-.suite button{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:6px 11px;cursor:pointer;font-size:13.5px;color:var(--ink-2);min-height:36px}
-.suite button b{font:700 12px var(--f-mono);color:var(--ink)}
-.suite button .dot{width:8px;height:8px;border-radius:50%;background:var(--rule);flex:none}
-.suite button .dot.ok{background:var(--bad)}
-.suite button:hover{border-color:var(--cobalt)}
-.suite button[aria-current="true"]{border-color:var(--cobalt);background:var(--cobalt-soft);color:var(--ink)}
-.labprog{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
-.labprog .meter{width:120px}
-.scene{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:20px;align-items:start}
-@media (max-width:1180px){.scene{grid-template-columns:minmax(0,1fr)}}
-.brief,.bench{display:flex;flex-direction:column;gap:16px;min-width:0}
-.bench{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}
-@media (max-width:1180px){.bench{position:static}}
-.scene-title{display:flex;flex-direction:column;gap:8px}
-.scene-title h2{font-size:clamp(22px,2.4vw,27px)}
-.setupcard{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
-.setupcard .src{font:700 17px var(--f-body);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-dl.kv{display:grid;grid-template-columns:minmax(84px,max-content) minmax(0,1fr);gap:7px 14px;margin:0;font-size:14px}
-dl.kv dt{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);padding-top:3px}
+.labhead .ctl{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.picker{display:flex;flex-direction:column;gap:8px}
+.picker .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.picker .grp>.lbl{width:136px;flex:none;white-space:nowrap}
+@media (max-width:640px){.picker .grp>.lbl{width:100%}}
+.picker button{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px 9px;cursor:pointer;font-size:14px;color:var(--muted);min-height:32px;position:relative}
+.picker button b{font:600 12.5px var(--f-mono);color:var(--fg)}
+.picker button .dot{width:7px;height:7px;border-radius:50%;background:var(--bad);flex:none}
+.picker button:hover{border-color:var(--accent)}
+.picker button[aria-current="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--fg)}
+.scene{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-rows:auto auto auto auto 1fr;grid-template-areas:"title bench" "setup bench" "steps bench" "cause bench" ". bench";column-gap:36px;row-gap:22px;align-items:start}
+.s-title{grid-area:title;display:flex;flex-direction:column;gap:8px}
+.s-setup{grid-area:setup}
+.s-steps{grid-area:steps}
+.s-cause{grid-area:cause}
+.bench{grid-area:bench;position:sticky;top:72px}
+@media (max-width:1060px){
+  .scene{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"title" "setup" "bench" "steps" "cause"}
+  .bench{position:static}
+}
+.s-setup{border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.s-setup summary{font-weight:400}
+dl.kv{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:10px 0 0;font-size:15px}
+dl.kv dt{font-size:13px;font-weight:600;color:var(--muted);padding-top:2px}
 dl.kv dd{margin:0}
-details{border:1px solid var(--rule);border-radius:12px;padding:10px 14px;background:var(--panel);font-size:14px}
-details summary{cursor:pointer;font-weight:600}
-details p{margin:8px 0 2px}
-.stepcard{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
-ol.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
-ol.steps li label{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:10px;padding:8px;border-radius:10px;cursor:pointer}
-ol.steps li label:hover{background:var(--panel-2)}
-ol.steps input{position:absolute;opacity:0;pointer-events:none}
-ol.steps .num{grid-row:1/3;width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font:700 12px var(--f-mono)}
-ol.steps .do{font-weight:600;font-size:15px}
-ol.steps .see{font-size:13.5px;color:var(--ink-2)}
-ol.steps input:checked+label .num{background:var(--good);border-color:var(--good);color:var(--panel)}
-ol.steps input:checked+label .do{color:var(--ink-2);text-decoration:line-through;text-decoration-thickness:1px}
-ol.steps input:focus-visible+label{outline:2px solid var(--cobalt);outline-offset:1px}
-.benchcard{background:var(--panel);border:1px solid var(--rule);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
-.benchbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:var(--panel-2);border-bottom:1px solid var(--rule)}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:26px minmax(0,1fr);column-gap:8px}
+ol.steps li::before{content:counter(s);grid-row:1/3;font:600 13px/1.7 var(--f-mono);color:var(--muted)}
+ol.steps .do{font-weight:500}
+ol.steps .see{font-size:14.5px;color:var(--muted)}
+.bench{border:1px solid var(--line);border-radius:10px;min-width:0;background:var(--bg)}
+.bench-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line)}
 .mock{padding:16px;display:flex;flex-direction:column;gap:14px}
-.mock .lbl{margin-bottom:-2px}
-.mock>.btn{align-self:flex-start}
-.realfield{width:100%;font:400 20px/1.45 var(--f-cjk);background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:10px;padding:11px 13px;resize:vertical}
-.realfield:focus{outline:2px solid var(--cobalt);outline-offset:0;border-color:var(--cobalt)}
-dl.appstate{display:grid;grid-template-columns:minmax(110px,max-content) minmax(0,1fr);gap:0;margin:0;background:var(--paper);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
-dl.appstate dt,dl.appstate dd{padding:8px 12px;border-bottom:1px solid var(--rule);margin:0;min-width:0}
-dl.appstate dt{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);padding-top:10px}
-dl.appstate dd{font-weight:600;font-size:15px;overflow-wrap:anywhere}
-dl.appstate dt:nth-last-of-type(1),dl.appstate dd:last-child{border-bottom:0}
-dl.appstate dd.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent)}
+.fieldwrap{display:flex;flex-direction:column;gap:6px}
+.realfield{width:100%;font-size:20px;line-height:1.45;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px 11px;resize:vertical}
+.realfield:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+dl.appstate{display:grid;grid-template-columns:max-content minmax(0,1fr);margin:0;font-size:15px}
+dl.appstate dt,dl.appstate dd{padding:6px 0;border-top:1px solid var(--line);margin:0;min-width:0}
+dl.appstate dt{font-size:13px;font-weight:600;color:var(--muted);padding-right:20px;padding-top:8px}
+dl.appstate dd{font-weight:600;overflow-wrap:anywhere}
+dl.appstate dd.bad{color:var(--bad)}
 dl.appstate dd.good{color:var(--good)}
-.cpline{display:flex;flex-wrap:wrap;gap:5px;min-height:24px}
-.cpline span.ch{display:inline-flex;flex-direction:column;align-items:center;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:3px 9px;font:400 20px var(--f-cjk);min-width:48px}
+.cpline{display:flex;flex-wrap:wrap;gap:4px;min-height:24px}
+.cpline span.ch{display:inline-flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:20px;min-width:46px}
 .cpline span.ch.wide{border-color:var(--bad)}
-.cpline small{font:500 10px var(--f-mono);color:var(--ink-2)}
-.sentlist{margin:6px 0 0;padding-left:18px;font:400 17px var(--f-cjk)}
-.cvbox{position:relative;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--paper)}
+.cpline small{font:10px var(--f-mono);color:var(--muted)}
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.list li{padding:6px 2px;border-bottom:1px solid var(--line);font-size:16px}
+.list li.empty{color:var(--muted);font-size:14.5px}
+.dlg{border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.dlg h3{font-size:15px}
+.bin{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.bin li{position:relative;display:flex;align-items:center;gap:10px;padding:0 12px;min-height:44px;border-bottom:1px solid var(--line);cursor:default;outline:none;font-size:16px}
+.bin li:last-child{border-bottom:0}
+.bin li.sel{background:var(--accent-soft)}
+.bin li:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
+.bin li .ic{font:11px var(--f-mono);color:var(--muted);width:30px}
+.bin input{position:absolute;left:52px;right:8px;top:6px;bottom:6px;font-size:16px;border:1px solid var(--accent);border-radius:4px;padding:0 8px;background:var(--bg);color:var(--fg);outline:none}
+.bin input.armed{border-color:transparent;background:transparent;color:transparent;caret-color:transparent}
+.cvbox{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 canvas.cvedit{display:block;width:100%;height:150px;cursor:text}
 textarea.cvinput{position:absolute;opacity:.02;border:0;outline:0;padding:0;margin:0;resize:none;overflow:hidden;width:40px;height:30px;background:transparent;color:transparent;caret-color:transparent;font-size:24px}
-.ask{border:1px solid var(--rule);border-radius:12px;background:var(--paper);padding:10px 14px;display:flex;flex-direction:column;gap:6px;margin:0}
-.ask legend{font-weight:700;font-size:14.5px;padding:0 4px}
-.ask label{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer}
-.ask input{margin-top:4px;accent-color:var(--cobalt)}
-.verdict{margin:0 16px 16px;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--rule);background:var(--paper)}
-.verdict .vh{display:flex;align-items:center;gap:10px}
-.verdict .vh i{width:12px;height:12px;border-radius:50%;background:var(--ink-2);flex:none}
-.verdict b{font:800 18px var(--f-display);font-stretch:110%}
-.verdict.bug{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--panel))}
-.verdict.bug .vh i{background:var(--bad);box-shadow:0 0 0 4px color-mix(in srgb,var(--bad) 22%,transparent)}
+.ask{border:1px solid var(--line);border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:6px;margin:0}
+.ask legend{font-weight:600;font-size:14.5px;padding:0 4px}
+.ask label{display:flex;gap:8px;align-items:flex-start;font-size:14.5px;cursor:pointer}
+.ask input{margin-top:5px;accent-color:var(--accent)}
+.verdict{padding:12px 16px 14px;border-top:1px solid var(--line);border-left:3px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.verdict b{font-size:16px}
+.verdict.bug{border-left-color:var(--bad)}
 .verdict.bug b{color:var(--bad)}
-.verdict.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--panel))}
-.verdict.ok .vh i{background:var(--good)}
+.verdict.ok{border-left-color:var(--good)}
 .verdict.ok b{color:var(--good)}
-ul.facts{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:13.5px;overflow-wrap:anywhere}
+ul.facts{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14.5px;overflow-wrap:anywhere}
 ul.facts li.bad{color:var(--bad)}
 ul.facts li.good{color:var(--good)}
-.reportbox{margin:0 16px 16px;display:flex;flex-direction:column;gap:8px}
-.report{font:400 12.5px/1.6 var(--f-mono);white-space:pre-wrap;background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:12px;margin:0;max-height:260px;overflow:auto}
-.evcard{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-ul.log{list-style:none;margin:0;padding:0;font:400 12px/1.65 var(--f-mono);max-height:190px;overflow:auto;color:var(--ink-2)}
-ul.log li{white-space:pre-wrap;overflow-wrap:anywhere;border-left:2px solid transparent;padding-left:8px}
-ul.log li.c{color:var(--cobalt);border-left-color:var(--cobalt)}
+.reportbox{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px}
+.report{font:12.5px/1.6 var(--f-mono);white-space:pre-wrap;background:var(--soft);border-radius:6px;padding:12px;margin:0;max-height:280px;overflow:auto}
+.events{border-top:1px solid var(--line);padding:10px 16px 12px}
+ul.log{list-style:none;margin:6px 0 0;padding:0;font:12.5px/1.7 var(--f-mono);max-height:170px;overflow:auto;color:var(--muted)}
+ul.log li{white-space:pre-wrap;overflow-wrap:anywhere;padding-left:8px;border-left:2px solid transparent}
+ul.log li.c{color:var(--accent);border-left-color:var(--accent)}
 ul.log li.i{color:var(--good);border-left-color:var(--good)}
-ul.log li.k{border-left-color:var(--rule)}
 
 /* ---------- Inspector ---------- */
-.inspgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
-.insp textarea{width:100%;min-height:130px;font:400 22px/1.5 var(--f-cjk);background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:12px;padding:14px;resize:vertical}
-.insp{padding:18px;display:flex;flex-direction:column;gap:12px}
-.evwrap{max-height:380px;overflow:auto;border:1px solid var(--rule);border-radius:14px;background:var(--panel)}
-.evwrap table{border-collapse:collapse;width:100%;min-width:560px;font:400 12.5px var(--f-mono)}
-.evwrap th,.evwrap td{padding:6px 12px;border-bottom:1px solid var(--rule);text-align:left}
-.evwrap th{position:sticky;top:0;background:var(--panel-2);font-weight:600;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
-.evwrap td:first-child span{display:inline-block;padding:1px 8px;border-radius:99px;font-weight:600;font-size:11.5px}
-tr.ev-comp td:first-child span{background:var(--cobalt-soft);color:var(--cobalt)}
-tr.ev-key td:first-child span{background:var(--panel-2);color:var(--ink-2)}
-tr.ev-input td:first-child span{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.insp textarea{width:100%;min-height:120px;font-size:22px;line-height:1.5;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:12px;resize:vertical}
+.insp textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.evwrap{max-height:380px;overflow:auto;border-top:1px solid var(--line)}
+.evwrap table{border-collapse:collapse;width:100%;min-width:560px;font:13px var(--f-mono)}
+.evwrap th,.evwrap td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);text-align:left}
+.evwrap th{position:sticky;top:0;background:var(--bg);font:600 12.5px var(--f);color:var(--muted)}
+tr.ev-comp td:first-child{color:var(--accent)}
+tr.ev-input td:first-child{color:var(--good)}
+tr.ev-key td:first-child{color:var(--muted)}
 .evwrap td.t{color:var(--bad);font-weight:600}
 </style>
-<style>
-/* Readability pass: larger text, sentence-case labels, normal-width headings, stronger secondary text */
-:root{--ink-2:#40476A}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink-2:#B4BAD6}}
-:root[data-theme="dark"]{--ink-2:#B4BAD6}
-body{font-size:17px;line-height:1.65}
-h1{font-weight:700;font-stretch:100%;letter-spacing:-.02em;line-height:1.06}
-h2{font-weight:700;font-stretch:100%;letter-spacing:-.01em;line-height:1.2}
-h3{font-size:18px}
-.brand b,.verdict b{font-stretch:100%}
-.eyebrow,.lbl,.stage .k,dl.kv dt,dl.appstate dt,.tbl th,.evwrap th,.brand small,.chip,.imewin-src{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-weight:600}
-.eyebrow{font-size:14.5px}
-.lbl{font-size:14px;color:var(--ink-2)}
-.brand small{font-size:13px}
-.stage .k{font-size:14.5px}
-.lede{font-size:19px;line-height:1.6}
-.hint{font-size:15.5px;line-height:1.6}
-.note{font-size:15.5px;line-height:1.6}
-p{max-width:68ch}
-code{font-size:.84em}
-kbd{font-size:13px;padding:4px 7px}
-.chip{font-size:13.5px;padding:3px 10px}
-section.view{gap:40px}
-.sect{gap:18px}
-nav.views button .t{font-size:16px}
-nav.views button .d{font-size:13.5px}
-.seg button{font-size:15px}
-.btn{font-size:15px}
-.btn.sm{font-size:14.5px}
-.tbl table{font-size:15.5px}
-.tbl th{font-size:13.5px}
-.tbl th,.tbl td{padding:13px 16px}
-.stage p,.fam p{font-size:15.5px;line-height:1.6}
-.evtick{font-size:13px}
-.langpick button span{font-size:13.5px}
-.oswin ul{font-size:15.5px;gap:9px}
-.typed{font-size:14.5px}
-.suite button{font-size:15px;padding:7px 12px}
-.suite button b{font-size:13.5px}
-.scene{gap:24px}
-.brief,.bench{gap:18px}
-dl.kv{font-size:15.5px;gap:10px 16px}
-dl.kv dt{font-size:14px;padding-top:1px}
-ol.steps{gap:6px}
-ol.steps li label{padding:10px 8px;row-gap:3px}
-ol.steps .do{font-size:16.5px;line-height:1.45}
-ol.steps .see{font-size:15px;line-height:1.5}
-details{font-size:15.5px}
-dl.appstate dt{font-size:14px;padding-top:9px}
-dl.appstate dd{font-size:16px}
-.verdict{gap:10px}
-ul.facts{font-size:15px;gap:6px}
-ul.log{font-size:13px;line-height:1.75}
-.report{font-size:13.5px}
-.evwrap table{font-size:13.5px}
-.evwrap th{font-size:13px}
-.ask label{font-size:15px}
-</style>
-<div class="shell">
-<aside class="side">
-  <div class="brand"><b><span>IME</span> Field Guide</b><small>CJK input QA</small></div>
-  <nav class="views" aria-label="Sections">
-    <button type="button" data-v="guide"><span class="n">01</span><span class="t">Basics</span><span class="d">How IME text gets made</span></button>
-    <button type="button" data-v="compare"><span class="n">02</span><span class="t">Microsoft vs Apple</span><span class="d">One language at a time</span></button>
-    <button type="button" data-v="lab"><span class="n">03</span><span class="t">Bug Lab</span><span class="d">11 hands-on tests</span></button>
-    <button type="button" data-v="inspector"><span class="n">04</span><span class="t">Live Inspector</span><span class="d">See your own events</span></button>
-  </nav>
-  <div class="side-foot">
-    <span class="lbl">Bug Lab progress</span>
-    <div class="meter" aria-hidden="true"><i class="progbar"></i></div>
-    <span class="hint proghint"></span>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span>IME</span> Field Guide</div>
+    <nav class="views" aria-label="Sections">
+      <a href="#guide" data-v="guide">Basics</a>
+      <a href="#compare" data-v="compare">Microsoft vs Apple</a>
+      <a href="#lab" data-v="lab">Bug Lab</a>
+      <a href="#checklist" data-v="checklist">Checklist</a>
+      <a href="#inspector" data-v="inspector">Inspector</a>
+    </nav>
   </div>
-</aside>
+</header>
 
 <main>
 <!-- ================= BASICS ================= -->
 <section class="view" id="v-guide" hidden>
   <div class="hero">
-    <div class="hero-text">
-      <div class="eyebrow">Chinese · Japanese · Korean</div>
+    <div class="stack">
+      <div class="lbl">Chinese · Japanese · Korean</div>
       <h1>Why IME bugs happen</h1>
       <p class="lede">An input method editor sits between the keyboard and the text field. The app sees keys that are not yet text. Most IME bugs come from the app treating those in-between keys as if they were final.</p>
-      <p class="hint">The window on the right replays real IME sessions. Blue text is the <span class="draft">draft</span>: the IME owns it until it is committed.</p>
+      <p class="muted">The window replays real IME sessions: keys go to the IME, the <span class="draft">draft</span> is underlined while the IME owns it, candidates appear, and only the commit makes it final text.</p>
     </div>
-    <div class="imewin" id="demo" aria-label="IME composition demo">
-      <div class="imewin-top">
-        <div class="imewin-src"><span class="mode" id="demo-mode">あ</span><span id="demo-src">Japanese · Romaji</span></div>
-        <div class="imewin-langs" id="demo-langs" role="group" aria-label="Demo language">
+    <div class="demo" id="demo" aria-label="IME composition demo">
+      <div class="demo-top">
+        <div><span class="mode" id="demo-mode">あ</span><span id="demo-src">Japanese · Romaji</span></div>
+        <div class="demo-langs" id="demo-langs" role="group" aria-label="Demo language">
           <button type="button" data-l="0" aria-pressed="true" lang="ja">日</button>
           <button type="button" data-l="1" aria-pressed="false" lang="ko">한</button>
           <button type="button" data-l="2" aria-pressed="false" lang="zh-CN">简</button>
           <button type="button" data-l="3" aria-pressed="false" lang="zh-TW">繁</button>
         </div>
       </div>
-      <div class="imewin-body">
+      <div class="demo-body">
         <div class="imefield" id="demo-field" lang="ja"><span id="demo-text"></span><span class="dwrap"><span class="draft" id="demo-draft">にほんご</span><span class="cands" id="demo-cands"><span class="on"><small>1</small>日本語</span><span><small>2</small>二本後</span><span><small>3</small>にほんご</span></span></span><span class="caret"></span></div>
-        <div><div class="lbl" style="margin-bottom:6px">Keys pressed</div><div class="keystrip" id="demo-keys"><kbd>n</kbd><kbd>i</kbd><kbd>h</kbd><kbd>o</kbd><kbd>n</kbd><kbd>g</kbd><kbd>o</kbd><kbd class="hot">Space</kbd></div></div>
-        <div><div class="lbl" style="margin-bottom:6px">What the app receives</div><div class="evtick" id="demo-ev"><div class="c">compositionstart ""</div><div class="c">compositionupdate "にほんご"</div><div>keydown key="Process" isComposing=true keyCode=229</div></div></div>
+        <div><div class="lbl">Keys pressed</div><div class="keystrip" id="demo-keys"><kbd>n</kbd><kbd>i</kbd><kbd>h</kbd><kbd>o</kbd><kbd>n</kbd><kbd>g</kbd><kbd>o</kbd><kbd class="hot">Space</kbd></div></div>
+        <div><div class="lbl">What the app receives</div><div class="evtick" id="demo-ev"><div class="c">compositionstart ""</div><div class="c">compositionupdate "にほんご"</div><div>keydown key="Process" isComposing=true keyCode=229</div></div></div>
       </div>
     </div>
   </div>
 
   <div class="sect">
-    <div class="sect-head"><h2>The path from key to text</h2></div>
-    <div class="pipe">
-      <div class="stage"><span class="k">1 · Keys</span><div class="vis"><kbd>n</kbd><kbd>i</kbd><kbd>h</kbd><kbd>o</kbd><kbd>n</kbd></div><p>The IME takes every key first. The app only sees placeholders.</p></div>
-      <div class="stage"><span class="k">2 · Composition</span><div class="vis" lang="ja"><span class="draft">にほん</span></div><p>Underlined draft text. Nothing is committed yet.</p></div>
-      <div class="stage"><span class="k">3 · Candidates</span><div class="vis" lang="ja"><span class="mini"><span>日本</span><span>二本</span><span>ニホン</span></span></div><p><kbd>Space</kbd> or arrows move through matches. Number keys pick one.</p></div>
-      <div class="stage"><span class="k">4 · Commit</span><div class="vis" lang="ja">日本</div><p><kbd>Enter</kbd>, a number or a click commits. Only now is it final text.</p></div>
-    </div>
-  </div>
-
-  <div class="sect">
-    <div class="sect-head"><h2>What the app receives</h2></div>
-    <div class="tbl"><table>
-      <thead><tr><th>Moment</th><th>Browser / web view</th><th>Windows native</th><th>macOS native</th></tr></thead>
+    <div class="head"><h2>What the app receives</h2></div>
+    <div class="tw"><table class="t">
+      <thead><tr><th>Moment</th><th>Browser or web view event</th></tr></thead>
       <tbody>
-        <tr><td>Key pressed while composing</td><td><code>keydown</code> with <code>isComposing=true</code>, often <code>keyCode 229</code></td><td>Key goes to the IME first (TSF / IMM32)</td><td><code>interpretKeyEvents</code> hands it to the input context</td></tr>
-        <tr><td>Draft text starts</td><td><code>compositionstart</code></td><td><code>WM_IME_STARTCOMPOSITION</code></td><td><code>setMarkedText:</code></td></tr>
-        <tr><td>Draft text changes</td><td><code>compositionupdate</code>, <code>input</code> (insertCompositionText)</td><td><code>WM_IME_COMPOSITION</code></td><td><code>setMarkedText:</code> again</td></tr>
-        <tr><td>Candidate window placement</td><td>Caret rectangle of the field</td><td>Text-extent query from TSF</td><td><code>firstRectForCharacterRange:</code></td></tr>
-        <tr><td>Text committed</td><td><code>compositionend</code>, then <code>input</code></td><td><code>WM_IME_ENDCOMPOSITION</code> / result string</td><td><code>insertText:</code> / <code>unmarkText</code></td></tr>
+        <tr><td>Key pressed while composing</td><td><code>keydown</code> with <code>isComposing=true</code>, often <code>keyCode 229</code> and <code>key="Process"</code></td></tr>
+        <tr><td>Draft starts</td><td><code>compositionstart</code></td></tr>
+        <tr><td>Draft changes</td><td><code>compositionupdate</code>, then <code>input</code> (insertCompositionText)</td></tr>
+        <tr><td>Text committed</td><td><code>compositionend</code>, then <code>input</code></td></tr>
       </tbody>
     </table></div>
-    <p class="note">Event order is not identical everywhere. Safari, for example, can fire <code>compositionend</code> before the <kbd>Enter</kbd> keydown that confirmed the text, so an <code>isComposing</code> check that works in Chrome can fail there.</p>
+    <p class="note">Event order is not identical everywhere. Safari can fire <code>compositionend</code> before the <kbd>Enter</kbd> keydown that confirmed the text, so an <code>isComposing</code> check that works in Chrome can fail there.</p>
+    <details>
+      <summary>Native Windows and macOS equivalents (for developers)</summary>
+      <div class="tw"><table class="t wide">
+        <thead><tr><th>Moment</th><th>Windows native</th><th>macOS native</th></tr></thead>
+        <tbody>
+          <tr><td>Key pressed while composing</td><td>Key goes to the IME first (TSF / IMM32)</td><td><code>interpretKeyEvents</code> hands it to the input context</td></tr>
+          <tr><td>Draft starts</td><td><code>WM_IME_STARTCOMPOSITION</code></td><td><code>setMarkedText:</code></td></tr>
+          <tr><td>Draft changes</td><td><code>WM_IME_COMPOSITION</code></td><td><code>setMarkedText:</code> again</td></tr>
+          <tr><td>Candidate window placement</td><td>Text-extent query from TSF</td><td><code>firstRectForCharacterRange:</code></td></tr>
+          <tr><td>Text committed</td><td><code>WM_IME_ENDCOMPOSITION</code> / result string</td><td><code>insertText:</code> / <code>unmarkText</code></td></tr>
+        </tbody>
+      </table></div>
+    </details>
   </div>
 
   <div class="sect">
-    <div class="sect-head"><h2>Six bug families to test for</h2><p class="hint">Each card links to the Bug Lab tests that reproduce it.</p></div>
+    <div class="head"><h2>Nine bug families to test for</h2><p class="muted">Each links to the Bug Lab tests that reproduce it.</p></div>
     <div class="fams">
-      <div class="fam"><div class="glyph"><kbd>Space</kbd><span class="x">→</span><span>▶</span></div><h3>Hotkey leak</h3><p>A single-key shortcut such as <kbd>Space</kbd> or <kbd>1</kbd> fires while the IME is using that key to pick a candidate.</p><div class="row"><button type="button" class="chip" data-goto="ja-hotkey">JA-1</button><button type="button" class="chip" data-goto="ko-hotkey">KO-1</button><button type="button" class="chip" data-goto="zht-hotkey">ZH-2</button></div></div>
-      <div class="fam"><div class="glyph"><kbd>Enter</kbd><span class="x">→</span><span style="font:700 15px var(--f-body)">Sent early</span></div><h3>Enter submits early</h3><p>The <kbd>Enter</kbd> that confirms a conversion also sends the message or presses OK, or leaves a character behind.</p><div class="row"><button type="button" class="chip" data-goto="ja-enter">JA-2</button><button type="button" class="chip" data-goto="ko-enter">KO-2</button></div></div>
-      <div class="fam"><div class="glyph" lang="ja"><span>１２０</span><span class="x">≠</span><span>120</span></div><h3>Full-width leakage</h3><p>The IME produces <span lang="zh-CN">：</span> <span lang="ja">１２０</span> or curly quotes where the field only accepts ASCII.</p><div class="row"><button type="button" class="chip" data-goto="ja-fullwidth">JA-3</button><button type="button" class="chip" data-goto="zhs-fullwidth">ZH-1</button></div></div>
-      <div class="fam"><div class="glyph" lang="ko"><span class="draft">한글</span><span class="x">→</span><span>ㅎㅏㄴ</span></div><h3>Lost composition</h3><p>Moving focus, or re-rendering the field while you type, throws away or breaks the draft text.</p><div class="row"><button type="button" class="chip" data-goto="ja-lost">JA-4</button><button type="button" class="chip" data-goto="ko-lost">KO-4</button></div></div>
-      <div class="fam"><div class="glyph"><span class="box" aria-hidden="true"><i></i><b></b></span></div><h3>Candidate window position</h3><p>The list opens at a corner or far from the caret in custom-drawn, scaled or scrolled text fields. Checked by eye.</p><div class="row"><button type="button" class="chip" data-goto="ja-cand">JA-5</button></div></div>
-      <div class="fam"><div class="glyph" lang="ko"><span>ㅠ</span><span class="x">≠</span><span style="font-family:var(--f-mono)">b</span></div><h3>Key code vs character</h3><p>Shortcuts matched by typed character fail when Hangul, Zhuyin or kana mode changes what the key reports.</p><div class="row"><button type="button" class="chip" data-goto="ko-key">KO-3</button></div></div>
+      <div class="fam"><h3>Hotkey leak</h3><div class="ex"><kbd>Space</kbd> picks a candidate <b>and</b> plays the video</div><p>A single-key shortcut such as <kbd>Space</kbd> or <kbd>1</kbd> fires while the IME is using that key.</p><div class="row"><button type="button" class="chip" data-goto="ja-hotkey">JA-1</button><button type="button" class="chip" data-goto="ko-hotkey">KO-1</button><button type="button" class="chip" data-goto="zht-hotkey">ZH-2</button></div></div>
+      <div class="fam"><h3>Navigation key leak</h3><div class="ex"><kbd>Esc</kbd> cancels the draft <b>and</b> closes the dialog</div><p><kbd>Esc</kbd>, <kbd>Tab</kbd>, arrows and <kbd>Backspace</kbd> edit the draft, but the app also closes a dialog, moves focus, steps a frame or deletes a clip.</p><div class="row"><button type="button" class="chip" data-goto="ja-esc">JA-6</button><button type="button" class="chip" data-goto="ja-arrows">JA-7</button><button type="button" class="chip" data-goto="ja-tab">JA-8</button></div></div>
+      <div class="fam"><h3>Enter submits early</h3><div class="ex"><kbd>Enter</kbd> confirms <b>and</b> sends the message</div><p>The <kbd>Enter</kbd> that confirms a conversion also sends the message or presses OK, or leaves a character behind.</p><div class="row"><button type="button" class="chip" data-goto="ja-enter">JA-2</button><button type="button" class="chip" data-goto="ko-enter">KO-2</button></div></div>
+      <div class="fam"><h3>Full-width leakage</h3><div class="ex" lang="ja">１２０ <b>≠</b> 120</div><p>The IME produces <span lang="zh-CN">：</span>, <span lang="ja">１２０</span>, a full-width space (U+3000) or curly quotes where the field expects ASCII.</p><div class="row"><button type="button" class="chip" data-goto="ja-fullwidth">JA-3</button><button type="button" class="chip" data-goto="zhs-fullwidth">ZH-1</button></div></div>
+      <div class="fam"><h3>Lost composition</h3><div class="ex" lang="ko"><span class="draft">한글</span> <b>→</b> ㅎㅏㄴ</div><p>Moving focus, or re-rendering the field while you type, throws away or breaks the draft.</p><div class="row"><button type="button" class="chip" data-goto="ja-lost">JA-4</button><button type="button" class="chip" data-goto="ko-lost">KO-4</button></div></div>
+      <div class="fam"><h3>First key lost</h3><div class="ex" lang="ja">きょう <b>→</b> kいょう</div><p>Type-to-rename opens the editor on the first key, before the IME sees it, so that key is dropped or stays a Latin letter.</p><div class="row"><button type="button" class="chip" data-goto="ko-rename">KO-5</button></div></div>
+      <div class="fam"><h3>Acts on draft text</h3><div class="ex">search runs on <b>mo'hu</b>, not 模糊</div><p>Search, validation or a length limit runs on the unfinished draft: filtering on pinyin letters, or cutting the draft at a character limit.</p><div class="row"><button type="button" class="chip" data-goto="zhs-search">ZH-3</button><button type="button" class="chip" data-goto="zhs-limit">ZH-4</button></div></div>
+      <div class="fam"><h3>Candidate window position</h3><div class="ex">list opens in the corner, not at the caret</div><p>Custom-drawn, scaled or scrolled text fields send the IME the wrong caret position. Checked by eye.</p><div class="row"><button type="button" class="chip" data-goto="ja-cand">JA-5</button></div></div>
+      <div class="fam"><h3>Key code vs character</h3><div class="ex" lang="ko">ㅠ <b>≠</b> b</div><p>Shortcuts matched by typed character fail when Hangul, Zhuyin or kana mode changes what the key reports.</p><div class="row"><button type="button" class="chip" data-goto="ko-key">KO-3</button></div></div>
     </div>
-    <p class="note">Everything here describes common behavior. Exact symptoms depend on the OS version, IME version, settings and the app's text engine. Treat each example as a pattern to try on your build and confirm before filing.</p>
   </div>
 </section>
 
 <!-- ================= COMPARE ================= -->
 <section class="view" id="v-compare" hidden>
-  <div class="sect-head"><div class="eyebrow">Side by side</div><h2>Microsoft IME and Apple IME</h2><p class="hint">Pick a language. Each panel shows how typing works and what is worth testing on that platform.</p></div>
-  <div class="langpick" id="cmp-tabs" role="group" aria-label="Language"></div>
-  <div id="cmp-root" style="display:flex;flex-direction:column;gap:16px"></div>
+  <div class="head"><h2>Microsoft IME and Apple IME</h2><p class="muted">Pick a language to see how typing works on each platform and what is worth testing.</p></div>
+  <div class="seg" id="cmp-tabs" role="group" aria-label="Language"></div>
+  <div id="cmp-root" class="stack" style="gap:20px"></div>
 </section>
 
 <!-- ================= LAB ================= -->
 <section class="view" id="v-lab" hidden>
   <div class="labhead">
-    <div class="txt">
-      <div class="eyebrow">Hands-on · your real keyboard</div>
+    <div class="head" style="max-width:640px">
       <h2>Bug Lab</h2>
-      <p class="hint">Each test is a small demo app with one bug pattern. Type with your own IME and follow the steps. The bench reads the real browser events and tells you whether the bug showed up.</p>
+      <p class="muted">Each test is a small demo app with one bug pattern. Type with your own IME and follow the steps. The bench reads the real browser events and tells you whether the bug showed up.</p>
     </div>
     <div class="ctl">
-      <span class="lbl">Your computer</span>
       <div class="seg" id="plat" role="group" aria-label="Your computer">
         <button type="button" data-p="win" aria-pressed="true">Windows · Microsoft IME</button>
         <button type="button" data-p="mac" aria-pressed="false">macOS · Apple IME</button>
       </div>
-      <div class="labprog"><div class="meter" aria-hidden="true"><i class="progbar"></i></div><span class="proghint"></span></div>
+      <div class="row small muted"><span class="proghint"></span><button type="button" class="btn link small" id="prog-reset">Reset</button></div>
     </div>
   </div>
-  <div class="suite" id="sclist"></div>
+  <div class="picker" id="sclist"></div>
   <div class="scene" id="scene"></div>
-  <p class="note">The labs assume a standard US QWERTY keyboard. A JIS or Korean keyboard works too: its extra keys (半角/全角, かな, 한/영) do the same job as the switch keys listed. Function keys and Ctrl or Cmd shortcuts need a hardware keyboard.</p>
+</section>
+
+<!-- ================= CHECKLIST ================= -->
+<section class="view" id="v-checklist" hidden>
+  <div class="labhead">
+    <div class="head" style="max-width:680px">
+      <h2>Checklist for real apps</h2>
+      <p class="muted">The labs run in a browser. Desktop apps often draw text with their own engine, so repeat each check in the app itself, on every kind of field below.</p>
+    </div>
+    <div class="row"><button type="button" class="btn" id="ck-copy">Copy as Markdown</button><span class="small muted" id="ck-msg" role="status"></span></div>
+  </div>
+
+  <div class="sect">
+    <h3>Where to test</h3>
+    <div class="tw"><table class="t wide ck">
+      <thead><tr><th>Field type</th><th>Examples</th><th>Check</th><th>Labs</th></tr></thead>
+      <tbody>
+        <tr><td>Single-line text fields</td><td>Clip, layer, marker, preset and file names</td><td>Enter only commits. Focus changes keep the draft. Length limits wait for the commit. Full-width spaces are handled.</td><td><button type="button" class="chip" data-goto="ja-enter">JA-2</button> <button type="button" class="chip" data-goto="ja-lost">JA-4</button> <button type="button" class="chip" data-goto="zhs-limit">ZH-4</button></td></tr>
+        <tr><td>Inline rename in lists and trees</td><td>Start typing, F2 or double-click on an item</td><td>The first key is not lost. Esc cancels only the draft. Enter only commits.</td><td><button type="button" class="chip" data-goto="ko-rename">KO-5</button> <button type="button" class="chip" data-goto="ja-esc">JA-6</button></td></tr>
+        <tr><td>Search and filter boxes</td><td>Panel search, effect search, filter fields</td><td>No filtering or requests on draft text. Enter does not jump to a result early.</td><td><button type="button" class="chip" data-goto="zhs-search">ZH-3</button> <button type="button" class="chip" data-goto="ko-enter">KO-2</button></td></tr>
+        <tr><td>Number and timecode fields</td><td>Duration, timecode, scrubbable values</td><td>Full-width digits and colons are normalized or blocked. Note the IME state when the field gets focus.</td><td><button type="button" class="chip" data-goto="ja-fullwidth">JA-3</button> <button type="button" class="chip" data-goto="zhs-fullwidth">ZH-1</button></td></tr>
+        <tr><td>Text on a canvas or viewer</td><td>Text tools that draw their own text</td><td>Candidate list at the caret. Draft shown in place, underlined, with the active segment marked. Undo and reconversion work.</td><td><button type="button" class="chip" data-goto="ja-cand">JA-5</button></td></tr>
+        <tr><td>Dialogs</td><td>Rename, save and export dialogs with OK and Cancel</td><td>The Enter that confirms the IME does not press OK. Esc does not close the dialog while a draft is open.</td><td><button type="button" class="chip" data-goto="ja-enter">JA-2</button> <button type="button" class="chip" data-goto="ja-esc">JA-6</button></td></tr>
+        <tr><td>Panels with single-key shortcuts</td><td>Timeline, viewer or list next to a focused text field</td><td>Space, numbers, arrows, Delete and Tab do not fire app shortcuts while composing.</td><td><button type="button" class="chip" data-goto="ja-hotkey">JA-1</button> <button type="button" class="chip" data-goto="ja-arrows">JA-7</button> <button type="button" class="chip" data-goto="ja-tab">JA-8</button></td></tr>
+        <tr><td>Ctrl or Cmd shortcuts</td><td>Bold, copy, app commands with Hangul, kana or Zhuyin mode on</td><td>Shortcuts work in every input mode.</td><td><button type="button" class="chip" data-goto="ko-key">KO-3</button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sect">
+    <h3>Checks without a lab</h3>
+    <div class="tw"><table class="t wide ck">
+      <thead><tr><th>Check</th><th>How</th><th>Expected</th></tr></thead>
+      <tbody>
+        <tr><td>Reconversion</td><td>Select committed text. Windows: the Convert (変換) key or <kbd>Win</kbd>+<kbd>/</kbd>. macOS Japanese: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>.</td><td>Candidates appear for the selected text. Nothing is duplicated or lost.</td></tr>
+        <tr><td>Undo and redo</td><td>Press Ctrl/Cmd+Z while the draft is underlined, then again after committing.</td><td>While composing, only the draft changes (or nothing). After the commit, one undo removes the whole word, with no leftover kana or jamo.</td></tr>
+        <tr><td>Switching away</td><td>With a draft underlined, Alt+Tab or Cmd+Tab away and back, click another panel, or open a menu.</td><td>The draft is committed or cancelled the same way every time, and never duplicated.</td></tr>
+        <tr><td>IME state per field</td><td>Focus a number field, then go back to a text field.</td><td>The number field gets ASCII (IME off or input normalized). The text field returns to the previous mode.</td></tr>
+        <tr><td>Characters outside the BMP</td><td>Enter <span lang="ja">𠮷</span> (U+20BB7) and <span lang="ja">𩸽</span> (U+29E3D) from the candidate list or by pasting. Move the caret over them and press Backspace.</td><td>One caret step and one Backspace per character. Length counts 1. Saved and reloaded intact.</td></tr>
+        <tr><td>Full-width space</td><td>Japanese hiragana mode, nothing underlined, press Space. Microsoft IME types U+3000 by default; on macOS it depends on settings.</td><td>Leading and trailing U+3000 are treated like ASCII spaces in names and search.</td></tr>
+        <tr><td>Draft rendering</td><td>Type a long reading and convert it in each kind of text field.</td><td>The draft shows in place, underlined, with the active segment marked, in a CJK font with no tofu (□).</td></tr>
+        <tr><td>Glyph forms (font, not IME)</td><td>Show <span lang="ja">直 骨 角</span> with the UI language set to Japanese, Simplified Chinese, Traditional Chinese and Korean.</td><td>Each language uses its own glyph forms, not one shared font.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sect">
+    <h3>Record in every IME bug</h3>
+    <ul class="ckl" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px">
+      <li>OS version and build</li>
+      <li>IME name and version. On Windows, whether “Use previous version of Microsoft IME” is on.</li>
+      <li>IME settings that change behavior: Live Conversion (macOS Japanese), predictive input, punctuation and space width</li>
+      <li>Keyboard layout: US, JIS or Korean</li>
+      <li>App build, and the browser or web view if the field is web-based</li>
+    </ul>
+  </div>
 </section>
 
 <!-- ================= INSPECTOR ================= -->
 <section class="view" id="v-inspector" hidden>
-  <div class="sect-head"><div class="eyebrow">Your own keyboard</div><h2>Live Inspector</h2><p class="hint">Switch to any Chinese, Japanese or Korean input method and type below. Every event the browser receives is listed, so you can see where composition starts, changes and ends.</p></div>
-  <div class="panel insp">
-    <label for="insp-in" class="hint">Try <kbd>Space</kbd>, <kbd>Enter</kbd>, <kbd>Tab</kbd>, number keys and <kbd>Esc</kbd> while the draft is underlined.</label>
+  <div class="head"><h2>Live Inspector</h2><p class="muted">Switch to any Chinese, Japanese or Korean input method and type below. Every event the browser receives is listed, so you can see where composition starts, changes and ends.</p></div>
+  <div class="insp stack">
+    <label for="insp-in" class="small muted">Try <kbd>Space</kbd>, <kbd>Enter</kbd>, <kbd>Tab</kbd>, <kbd>Esc</kbd>, arrows and number keys while the draft is underlined.</label>
     <textarea id="insp-in" lang="ja" placeholder="Type with an IME…"></textarea>
     <div class="row">
-      <button type="button" class="btn sm" id="insp-clear">Clear log</button>
-      <button type="button" class="btn sm" id="insp-copy">Copy log</button>
-      <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="insp-keys" checked> Show key events</label>
-      <span class="hint" id="insp-msg" role="status"></span>
+      <button type="button" class="btn" id="insp-clear">Clear log</button>
+      <button type="button" class="btn" id="insp-copy">Copy log</button>
+      <label class="small muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="insp-keys" checked> Show key events</label>
+      <span class="small muted" id="insp-msg" role="status"></span>
     </div>
   </div>
   <div class="evwrap"><table><thead><tr><th>Event</th><th>data / key</th><th>isComposing</th><th>keyCode</th><th>code</th></tr></thead><tbody id="insp-log"></tbody></table></div>
-  <p class="note">What to look for: an <kbd>Enter</kbd> keydown with <code>isComposing=false</code> right after <code>compositionend</code> (the Safari-style order), a composition that ends with empty data after <kbd>Tab</kbd>, or the last Korean syllable appearing twice.</p>
+  <p class="note">What to look for: an <kbd>Enter</kbd> keydown with <code>isComposing=false</code> right after <code>compositionend</code> (the Safari order), a composition that ends with empty data after <kbd>Tab</kbd>, or the last Korean syllable appearing twice.</p>
 </section>
 </main>
-</div>
+
+<footer>
+  <p>The scenarios model common bug classes, not specific tracked bugs. Behavior varies by OS, IME version, browser and settings, so confirm on your own build before filing.</p>
+  <p>The labs assume a US QWERTY hardware keyboard. JIS and Korean keyboards work too: 半角/全角, かな and 한/영 do the same job as the switch keys listed.</p>
+</footer>
 <script>
-/* ---------- Comparison data ---------- */
+/* ---------- Comparison data: one table per language ---------- */
 var LANGS=[
-{id:"zhcn",tab:"Chinese (Simplified)",lang:"zh-CN",
- ms:{name:"Microsoft Pinyin",native:"微软拼音",typed:"zhongwen  +  Space  →  中文\nnihao     +  Space  →  你好",
-  items:["Shift toggles Chinese and English mode by default.","Space picks the first candidate. Number keys 1 to 9 pick a specific one.","Enter commits the raw letters you typed (zhongwen), not a candidate.","In Chinese mode, punctuation becomes full-width: , → ，  . → 。  : → ："]},
- mac:{name:"Pinyin – Simplified",native:"拼音 – 简体",typed:"zhongwen  +  Space  →  中文\nnihao     +  Space  →  你好",
-  items:["Shift or Caps Lock can toggle Chinese and English, depending on Input Sources settings.","Space and number keys pick candidates, as on Windows.","Return commits the typed pinyin letters.","Chinese mode also outputs full-width punctuation such as ：and 。"]},
- bug:"A timecode or numeric field receives “：” (U+FF1A) instead of “:”. A single-key shortcut such as Space or 1 also fires while the IME is using it to choose a candidate."},
-{id:"zhtw",tab:"Chinese (Traditional)",lang:"zh-TW",
- ms:{name:"Microsoft Bopomofo",native:"微軟注音",typed:"s u 3  →  ㄋㄧˇ  →  你\ns u Space → ㄋㄧ + first tone → candidates",
-  items:["On the standard layout, 3 = ˇ, 4 = ˋ, 6 = ˊ, 7 = ˙ and Space = first tone. Digits are part of typing, not numbers.","Number keys pick candidates after the syllable is complete.","Changjie and Quick (Cangjie family) are also installed as separate input methods.","Traditional full-width punctuation includes ， 。 and corner brackets 「」."]},
- mac:{name:"Zhuyin – Traditional",native:"注音 – 繁體",typed:"s u 3  →  ㄋㄧˇ  →  你\ns u Space → ㄋㄧ + first tone → candidates",
-  items:["Same tone-key logic on the default Standard layout. Other layouts (Hsu, Eten and more) move the keys.","Also available: Pinyin – Traditional, Cangjie and Sucheng.","Return commits the current draft text.","Full-width punctuation and quote forms depend on the input source and its settings."]},
- bug:"Digit keys 3, 4, 6 and 7 are tone keys while composing. An app that treats them as shortcuts or numeric input breaks syllables. Quotes typed with the IME on can become curly or corner quotes and break code-like fields. Tab or a click can drop the draft."},
-{id:"ja",tab:"Japanese",lang:"ja",
- ms:{name:"Microsoft IME",native:"Microsoft IME (日本語)",typed:"nihongo  →  にほんご\n+ Space  →  日本語\n+ Enter  →  commit",
-  items:["Space converts the draft. Enter commits it.","F6 hiragana, F7 full-width katakana, F8 half-width katakana, F9 full-width Latin, F10 half-width Latin.","Predictive candidates can appear while you type.","The 半角/全角 key turns the IME on and off on Japanese keyboards."]},
- mac:{name:"Japanese – Romaji / Kana",native:"日本語 – ローマ字入力",typed:"nihongo  →  にほんご\n+ Space  →  日本語\n+ Return  →  commit",
-  items:["Space converts. Return commits.","F6 to F10 convert the draft the same way (hiragana, katakana, half-width, Latin).","Live Conversion can convert while you type, so the draft changes without Space.","英数 and かな keys switch modes on Japanese Apple keyboards."]},
- bug:"The Enter that confirms a conversion also presses a dialog's default button. Full-width Latin or digits (１２０) reach a field that only accepts ASCII. Live Conversion changes the draft text under a handler that expects it to stay stable."},
-{id:"ko",tab:"Korean",lang:"ko",
- ms:{name:"Microsoft Korean IME",native:"Microsoft 입력기 (한국어)",typed:"g k s    →  ㅎ → 하 → 한\ng k s k  →  하 + 나\ngksrmf   →  한글",
-  items:["Letters build a syllable block. The last syllable stays in composition until a new syllable starts, or Space or Enter arrives.","Adding a vowel after a final consonant moves that consonant into the next syllable (한 + ㅏ → 하나).","The 한/영 key switches Korean and English.","The Hanja key converts to hanja."]},
- mac:{name:"2-Set Korean",native:"2벌식",typed:"g k s    →  ㅎ → 하 → 한\ng k s k  →  하 + 나\ngksrmf   →  한글",
-  items:["Same syllable-building behavior. Other layouts exist (3-Set 390, 3-Set Final, 3-Set).","Switch input sources with Caps Lock or Ctrl+Space, depending on settings.","Option+Return starts hanja conversion.","The composing syllable is the last one on the line, so Enter and focus changes interact with it."]},
- bug:"The last syllable is lost or duplicated when Enter sends a message. Typing V gives ㅍ, so shortcuts matched by character stop working while Korean mode is on."}
+{id:"zhcn",native:"简体中文",name:"Chinese (Simplified)",lang:"zh-CN",
+ ex:"zhongwen  +  Space  →  中文\nnihao     +  Space  →  你好",
+ cols:["Microsoft Pinyin · 微软拼音","Pinyin – Simplified · 拼音 – 简体"],
+ rows:[
+  ["Chinese / English","Shift toggles 中 and 英 by default.","Shift or Caps Lock, depending on Input Sources settings."],
+  ["Pick a candidate","Space takes the first one. 1 to 9 pick a specific one.","Same: Space or 1 to 9."],
+  ["Enter / Return","Commits the raw letters (zhongwen), not a candidate.","Commits the typed pinyin letters."],
+  ["Punctuation","Chinese mode makes it full-width: ，。：","Also full-width, such as ：and 。"]],
+ bug:"A timecode or numeric field receives “：” (U+FF1A) instead of “:”. Search boxes filter on pinyin letters before a candidate is picked, and length limits cut the pinyin draft.",
+ labs:["zhs-fullwidth","zhs-search","zhs-limit"]},
+{id:"zhtw",native:"繁體中文",name:"Chinese (Traditional)",lang:"zh-TW",
+ ex:"s u 3      →  ㄋㄧˇ  →  你\ns u Space  →  ㄋㄧ + first tone  →  candidates",
+ cols:["Microsoft Bopomofo · 微軟注音","Zhuyin – Traditional · 注音 – 繁體"],
+ rows:[
+  ["Tone keys","Standard layout: 3 = ˇ, 4 = ˋ, 6 = ˊ, 7 = ˙, Space = first tone. Digits are part of typing.","Same on the Standard layout. Hsu, Eten and other layouts move the keys."],
+  ["Pick and commit","Number keys pick after the syllable is complete. Enter commits.","Number keys pick. Return commits the draft."],
+  ["Other input methods","Changjie and Quick install as separate input methods.","Pinyin – Traditional, Cangjie and Sucheng."],
+  ["Punctuation","Full-width ， 。 and corner brackets 「」.","Full-width forms depend on the input source and its settings."]],
+ bug:"Digit keys 3, 4, 6 and 7 are tone keys while composing. An app that treats them as shortcuts or numeric input breaks syllables. Quotes typed with the IME on can become corner quotes and break code-like fields.",
+ labs:["zht-hotkey"]},
+{id:"ja",native:"日本語",name:"Japanese",lang:"ja",
+ ex:"nihongo  →  にほんご\n+ Space  →  日本語\n+ Enter   →  commit",
+ cols:["Microsoft IME · 日本語","Japanese – Romaji · 日本語 – ローマ字入力"],
+ rows:[
+  ["Convert and commit","Space converts, Enter commits.","Space converts, Return commits."],
+  ["Function keys","F6 hiragana, F7 full-width katakana, F8 half-width katakana, F9 full-width Latin, F10 half-width Latin.","F6 / Ctrl+J hiragana, F7 / Ctrl+K katakana, F9 / Ctrl+L full-width romaji, F10 romaji. Fn may be needed."],
+  ["While typing","Prediction list appears. Tab moves into it.","Live Conversion can convert without Space, so the draft changes on its own."],
+  ["On / off","半角/全角 key, or Alt+` on a US keyboard.","英数 / かな on JIS keyboards. Ctrl+Shift+J for Hiragana on others."],
+  ["Segments","← → move between segments, Shift+← → resize one.","Same: ← → select a segment, Shift+← → resize it."],
+  ["Reconversion","Convert (変換) key, or Win+/.","Ctrl+Shift+R."]],
+ bug:"The Enter that confirms a conversion also presses a dialog's default button. Esc, Tab and arrows used for conversion reach app shortcuts. Full-width digits (１２０) reach a field that only accepts ASCII.",
+ labs:["ja-enter","ja-esc","ja-arrows","ja-tab","ja-fullwidth"]},
+{id:"ko",native:"한국어",name:"Korean",lang:"ko",
+ ex:"g k s    →  ㅎ → 하 → 한\ng k s k  →  하 + 나\ngksrmf   →  한글",
+ cols:["Microsoft Korean IME · Microsoft 입력기","2-Set Korean · 2벌식"],
+ rows:[
+  ["Syllables","The last syllable stays in composition until a new syllable starts, or Space or Enter arrives.","Same. Other layouts: 3-Set 390, 3-Set Final, 3-Set."],
+  ["Final consonants","A vowel after a final consonant moves it to the next syllable (한 + ㅏ → 하나).","Same."],
+  ["Korean / English","한/영 key (Right Alt on many US keyboards).","Caps Lock or Ctrl+Space, depending on settings."],
+  ["Hanja","Hanja key.","Option+Return."]],
+ bug:"The last syllable is lost or duplicated when Enter sends a message. Typing V gives ㅍ, so shortcuts matched by character stop working. Type-to-rename drops the first jamo.",
+ labs:["ko-enter","ko-key","ko-rename"]}
 ];
+
+/* ---------- Keyboard setup per language ---------- */
+var SETUP={
+ ja:{name:"Japanese",
+  win:{src:"Japanese – Microsoft IME",short:"Hiragana (あ)",layout:"Romaji input, standard QWERTY keys (a JIS keyboard works the same)",mode:"Hiragana. The taskbar icon shows あ. If it shows A, switch the mode.",sw:"Win+Space picks the input source. 半角/全角 (Alt+` on a US keyboard) toggles あ and A.",cfg:"Previous version of Microsoft IME: on/off. Predictive input: on/off."},
+  mac:{src:"Japanese – Romaji",short:"Hiragana (あ)",layout:"Romaji input, standard QWERTY keys (a JIS keyboard works the same)",mode:"Hiragana. The menu bar shows あ.",sw:"Ctrl+Space or the 🌐 key picks the input source. On a US keyboard press Ctrl+Shift+J for Hiragana, or choose Hiragana from the input menu. On a JIS keyboard press かな.",cfg:"Live Conversion: on/off. Prediction: on/off."}},
+ ko:{name:"Korean",
+  win:{src:"Korean – Microsoft IME",short:"Hangul (가)",layout:"2-set Korean (두벌식) on a US QWERTY keyboard",mode:"Hangul. The taskbar icon shows 가. If it shows A, press the 한/영 key.",sw:"Win+Space picks the input source. The 한/영 key (Right Alt on many US keyboards, or click the taskbar icon) toggles 가 and A.",cfg:"Previous version of Microsoft IME: on/off."},
+  mac:{src:"2-Set Korean",short:"한",layout:"2-set Korean (두벌식) on a US QWERTY keyboard",mode:"The menu bar shows 한. There is no inner mode to set.",sw:"Ctrl+Space, the 🌐 key, or Caps Lock (if set in Keyboard settings) switches the input source.",cfg:"Layout: 2-Set."}},
+ zhs:{name:"Chinese (Simplified)",
+  win:{src:"Chinese (Simplified) – Microsoft Pinyin",short:"Chinese mode (中)",layout:"Full Pinyin on a QWERTY keyboard",mode:"Chinese mode. The taskbar icon shows 中.",sw:"Win+Space picks the input source. Shift toggles 中 and 英.",cfg:"Previous version of Microsoft IME: on/off. Punctuation width: full/half."},
+  mac:{src:"Pinyin – Simplified",short:"Chinese mode (拼)",layout:"Full Pinyin on a QWERTY keyboard",mode:"The menu bar shows 拼. Make sure it is in Chinese mode, not English.",sw:"Ctrl+Space or the 🌐 key picks the input source. Shift or Caps Lock toggles Chinese and English, depending on your settings.",cfg:"Punctuation width: full/half."}},
+ zht:{name:"Chinese (Traditional)",
+  win:{src:"Chinese (Traditional) – Microsoft Bopomofo",short:"Chinese mode (中)",layout:"Standard (標準) Zhuyin layout on a US QWERTY keyboard",mode:"Chinese mode. The taskbar icon shows 中.",sw:"Win+Space picks the input source. Shift toggles 中 and 英.",cfg:"Previous version of Microsoft IME: on/off. Keyboard layout: Standard."},
+  mac:{src:"Zhuyin – Traditional",short:"ㄅ",layout:"Standard (標準) Zhuyin layout. In System Settings, check that the Zhuyin layout is Standard.",mode:"The menu bar shows ㄅ.",sw:"Ctrl+Space or the 🌐 key picks the input source.",cfg:"Zhuyin layout: Standard."}}
+};
+var GRP={ja:"Japanese · 日本語",ko:"Korean · 한국어",zh:"Chinese · 中文"};
 </script>
 <script>
 /* ---------- Lab helpers ---------- */
@@ -518,68 +482,132 @@ function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp
 function hex(ch){return "U+"+ch.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")}
 function cps(s){return Array.from(s).map(hex).join(" ")}
 var WIDE=/[！-～　-〿]/;
+/* Escape text and wrap only the CJK runs in lang spans, so Latin text keeps the UI font and Han characters get the right regional glyphs */
+var CJKRUN=/(?:[⺀-鿿가-힯豈-﫿︰-﹏＀-￯ᄀ-ᇿ㄰-㆏]|[\uD840-\uD87F][\uDC00-\uDFFF])+/g;
+function lt(s,lang){return esc(s).replace(CJKRUN,function(m){return '<span lang="'+lang+'">'+m+'</span>'})}
 function mkField(label,lang,o){
-  var wrap=document.createElement("div");
+  var wrap=document.createElement("div");wrap.className="fieldwrap";
   var l=document.createElement("label");l.className="lbl";l.textContent=label;l.htmlFor=o.id;
   var ta=document.createElement(o.single?"input":"textarea");
   if(o.single)ta.type="text";else ta.rows=o.rows||2;
   ta.id=o.id;ta.lang=lang;ta.className="realfield";ta.placeholder=o.ph||"";
   ta.autocomplete="off";ta.spellcheck=false;ta.setAttribute("autocapitalize","off");
-  wrap.style.display="flex";wrap.style.flexDirection="column";wrap.style.gap="6px";
   wrap.appendChild(l);wrap.appendChild(ta);
   return {wrap:wrap,ta:ta};
 }
-function mkBtn(text,fn,primary){
-  var b=document.createElement("button");b.type="button";b.className="btn sm"+(primary?" primary":"");b.textContent=text;b.addEventListener("click",fn);return b;
-}
+function mkBtn(text,fn,primary){var b=document.createElement("button");b.type="button";b.className="btn"+(primary?" primary":"");b.textContent=text;b.addEventListener("click",fn);return b}
+function rowWith(){var r=document.createElement("div");r.className="row";for(var i=0;i<arguments.length;i++)r.appendChild(arguments[i]);return r}
 function mkDl(){var d=document.createElement("dl");d.className="appstate";return d}
+/* Tracks composition state on one element. is(e): the key belongs to the IME. justEnded(): compositionend fired a moment ago (Safari order). */
+function trackComp(c,el){
+  var st={on:false,end:-1e9};
+  c.on(el,"compositionstart",function(){st.on=true});
+  c.on(el,"compositionend",function(){st.on=false;st.end=performance.now()});
+  st.is=function(e){return e.isComposing||e.keyCode===229||st.on};
+  st.justEnded=function(){return performance.now()-st.end<80};
+  return st;
+}
+function isControl(t){return /^(INPUT|TEXTAREA|BUTTON|SELECT|A)$/.test(t.tagName)||t.isContentEditable}
 
-/* ---------- Keyboard setup per language ---------- */
-var SETUP={
- ja:{name:"Japanese",
-  win:{src:"Japanese – Microsoft IME",layout:"Romaji input, standard QWERTY keys (a JIS keyboard works the same)",mode:"Hiragana. The taskbar icon shows あ. If it shows A, switch the mode.",sw:"Win+Space picks the input source. 半角/全角 (Alt+` on a US keyboard) toggles あ and A."},
-  mac:{src:"Japanese – Romaji (Hiragana)",layout:"Romaji input, standard QWERTY keys (a JIS keyboard works the same)",mode:"Hiragana. The menu bar shows あ.",sw:"Ctrl+Space or the 🌐 key picks the input source. On a US keyboard press Ctrl+J for Hiragana, or choose Hiragana from the menu-bar input menu. On a JIS keyboard press かな."}},
- ko:{name:"Korean",
-  win:{src:"Korean – Microsoft IME",layout:"2-set Korean (두벌식) on a US QWERTY keyboard",mode:"Hangul. The taskbar icon shows 가. If it shows A, press the 한/영 key.",sw:"Win+Space picks the input source. The 한/영 key (Right Alt on many US keyboards, or click the taskbar icon) toggles 가 and A."},
-  mac:{src:"2-Set Korean",layout:"2-set Korean (두벌식) on a US QWERTY keyboard",mode:"The menu bar shows 한. There is no inner mode to set.",sw:"Ctrl+Space, the 🌐 key, or Caps Lock (if you set it in Keyboard settings) switches the input source."}},
- zhs:{name:"Chinese (Simplified)",
-  win:{src:"Chinese (Simplified) – Microsoft Pinyin",layout:"Full Pinyin on a QWERTY keyboard",mode:"Chinese mode. The taskbar icon shows 中.",sw:"Win+Space picks the input source. Shift toggles 中 and 英."},
-  mac:{src:"Pinyin – Simplified",layout:"Full Pinyin on a QWERTY keyboard",mode:"The menu bar shows 拼. Make sure it is in Chinese mode, not English.",sw:"Ctrl+Space or the 🌐 key picks the input source. Shift or Caps Lock toggles Chinese and English, depending on your settings."}},
- zht:{name:"Chinese (Traditional)",
-  win:{src:"Chinese (Traditional) – Microsoft Bopomofo",layout:"Standard (標準) Zhuyin layout on a US QWERTY keyboard",mode:"Chinese mode. The taskbar icon shows 中.",sw:"Win+Space picks the input source. Shift toggles 中 and 英."},
-  mac:{src:"Zhuyin – Traditional",layout:"Standard (標準) Zhuyin layout. In System Settings, check that the Zhuyin layout is Standard.",mode:"The menu bar shows ㄅ.",sw:"Ctrl+Space or the 🌐 key picks the input source."}}
-};
-var GRP={ja:"Japanese · 日本語",ko:"Korean · 한국어",zh:"Chinese · 中文"};
-
-/* ---------- Builder: hotkey leak ---------- */
-function buildHotkey(c,o){
+/* ---------- Builder: single-key shortcuts (Space, digits, arrows, Backspace) ---------- */
+function buildKeys(c,o){
   var m=c.mock;
-  var f=mkField(o.label,o.lang,{id:o.id+"-f",ph:o.ph,rows:1});
+  var f=mkField(o.label,o.lang,{id:o.id+"-f",ph:o.ph,single:true});
   m.appendChild(f.wrap);
   var dl=mkDl();m.appendChild(dl);
-  var S={play:false,sel:"—",leak:{}},n=0,composing=false;
+  var S,n,leak;
   function paint(){
-    var lk=Object.keys(S.leak).map(function(k){return k+" ×"+S.leak[k]}).join(", ");
-    dl.innerHTML="<dt>Playback</dt><dd>"+(S.play?"Playing ▶":"Paused")+"</dd><dt>"+esc(o.selLabel)+"</dt><dd>"+esc(S.sel)+"</dd><dt>Leaked while composing</dt><dd class=\""+(n?"bad":"good")+"\">"+(n?esc(lk):"0")+"</dd>";
+    var lk=Object.keys(leak).map(function(k){return k+" ×"+leak[k]}).join(", ");
+    dl.innerHTML=o.view(S).map(function(r){return "<dt>"+esc(r[0])+"</dt><dd>"+esc(r[1])+"</dd>"}).join("")+
+      "<dt>Leaked while composing</dt><dd class=\""+(n?"bad":"good")+"\">"+(n?esc(lk):"0")+"</dd>";
   }
-  paint();
+  function reset(){S=o.init();n=0;leak={};paint()}
+  reset();
+  var comp=trackComp(c,f.ta);
   c.watch(f.ta);
-  c.on(f.ta,"compositionstart",function(){composing=true});
-  c.on(f.ta,"compositionend",function(){composing=false});
   c.on(document,"keydown",function(e){
-    var name=o.codes[e.code];if(!name)return;
-    var inField=e.target===f.ta;
-    var comp=e.isComposing||e.keyCode===229||composing;
-    function run(){if(e.code==="Space")S.play=!S.play;else S.sel=name}
-    if(inField&&!comp)return;
-    if(inField){
+    var name=o.keys[e.code];if(!name)return;
+    var t=e.target;
+    if(t===f.ta){
+      if(!comp.is(e))return; /* normal typing or caret movement in the box */
       if(c.mode()==="fix"){c.ok(e.code+" ignored because the IME was composing.");return}
-      run();S.leak[e.code]=(S.leak[e.code]||0)+1;n++;
+      o.apply(e.code,S);leak[e.code]=(leak[e.code]||0)+1;n++;
       c.hit(name+" ran because "+e.code+" arrived during composition (isComposing="+e.isComposing+", keyCode="+e.keyCode+").");
       paint();return;
     }
-    run();paint();c.note(name+" ran with focus outside the box. This is the normal use of the shortcut.");
+    /* Outside the box: only when nothing else on the page owns the key */
+    if(t!==document.body&&!(m.contains(t)&&!isControl(t)))return;
+    e.preventDefault();o.apply(e.code,S);paint();
+    c.note(name+" ran with focus outside the box. This is normal shortcut use.");
   });
+  m.appendChild(rowWith(mkBtn("Reset demo",reset)));
+}
+
+/* ---------- Builder: Esc closes a dialog ---------- */
+function buildEsc(c,o){
+  var m=c.mock;
+  var dlg=document.createElement("div");dlg.className="dlg";dlg.setAttribute("role","dialog");dlg.setAttribute("aria-label",o.title);
+  var h=document.createElement("h3");h.textContent=o.title;dlg.appendChild(h);
+  var f=mkField(o.label,o.lang,{id:o.id+"-f",ph:o.ph,single:true});dlg.appendChild(f.wrap);
+  var lastDraft="";
+  var closed=document.createElement("div");closed.className="stack";closed.hidden=true;
+  function close(msg){
+    dlg.hidden=true;closed.hidden=false;closed.innerHTML="";
+    var p=document.createElement("p");p.className="muted";p.textContent="Dialog closed. "+msg;
+    closed.appendChild(p);closed.appendChild(rowWith(mkBtn("Reopen dialog",reopen,true)));
+  }
+  function reopen(){dlg.hidden=false;closed.hidden=true;f.ta.value="";lastDraft="";f.ta.focus()}
+  dlg.appendChild(rowWith(
+    mkBtn("OK",function(){close("OK pressed with "+JSON.stringify(f.ta.value)+".")},true),
+    mkBtn("Cancel",function(){close("Cancel pressed.")})));
+  m.appendChild(dlg);m.appendChild(closed);
+  var comp=trackComp(c,f.ta);
+  c.on(f.ta,"compositionupdate",function(e){lastDraft=e.data||""});
+  c.watch(f.ta);
+  c.on(document,"keydown",function(e){
+    if(e.code!=="Escape"&&e.key!=="Escape")return;
+    if(dlg.hidden)return;
+    var ime=e.target===f.ta&&(comp.is(e)||comp.justEnded());
+    if(ime&&c.mode()==="fix"){c.ok("Esc went to the IME (isComposing="+e.isComposing+", keyCode="+e.keyCode+"). The dialog stayed open.");return}
+    if(ime){
+      close("The draft "+JSON.stringify(lastDraft)+" was lost with it.");
+      c.hit("The dialog closed on an Esc the IME was using to revert or cancel the draft (isComposing="+e.isComposing+", keyCode="+e.keyCode+").");
+    }else{
+      e.preventDefault();close("Esc with nothing underlined.");
+      c.note("Esc with no draft closed the dialog. This is normal.");
+    }
+  });
+}
+
+/* ---------- Builder: Tab moves focus ---------- */
+function buildTab(c,o){
+  var m=c.mock;
+  var a=mkField(o.label1,o.lang,{id:o.id+"-a",ph:o.ph,single:true});
+  var b=mkField(o.label2,o.lang,{id:o.id+"-b",rows:2});
+  m.appendChild(a.wrap);m.appendChild(b.wrap);
+  var dl=mkDl();m.appendChild(dl);
+  function paint(){
+    var ae=document.activeElement,fo=ae===a.ta?o.label1:ae===b.ta?o.label2:"Outside the form";
+    dl.innerHTML="<dt>Focus</dt><dd>"+esc(fo)+"</dd><dt>"+esc(o.label1)+" holds</dt><dd lang=\""+o.lang+"\">"+(esc(a.ta.value)||"(empty)")+"</dd>";
+  }
+  paint();
+  var comp=trackComp(c,a.ta);
+  c.watch(a.ta);
+  [a.ta,b.ta].forEach(function(el){c.on(el,"focus",paint);c.on(el,"input",paint);c.on(el,"blur",function(){setTimeout(paint,0)})});
+  c.on(a.ta,"compositionend",function(){setTimeout(paint,0)});
+  c.on(a.ta,"keydown",function(e){
+    if((e.code!=="Tab"&&e.key!=="Tab")||e.shiftKey)return;
+    var ime=comp.is(e)||comp.justEnded();
+    if(ime&&c.mode()==="fix"){c.ok("Tab went to the IME (isComposing="+e.isComposing+", keyCode="+e.keyCode+"). Focus stayed in "+o.label1+".");return}
+    e.preventDefault();
+    var held=a.ta.value;
+    b.ta.focus();
+    if(ime)setTimeout(function(){
+      c.hit("Focus jumped to "+o.label2+" on a Tab the IME was using. "+o.label1+" held "+JSON.stringify(held)+" and now holds "+JSON.stringify(a.ta.value)+".");paint();
+    },30);
+    else{c.note("Tab with nothing underlined moved focus to "+o.label2+". This is normal.");paint()}
+  });
+  m.appendChild(rowWith(mkBtn("Reset",function(){a.ta.value="";b.ta.value="";a.ta.focus();paint()})));
 }
 
 /* ---------- Builder: Enter sends ---------- */
@@ -588,19 +616,19 @@ function buildEnter(c,o){
   var f=mkField("Message (Enter sends, Shift+Enter adds a line)",o.lang,{id:o.id+"-f",ph:o.ph,rows:2});
   m.appendChild(f.wrap);
   var sent=document.createElement("div");m.appendChild(sent);
-  var list=[],composing=false,lastEnd=-1e9;
+  var list=[];
   function paint(){
-    sent.innerHTML="<div class=\"lbl\">Sent messages ("+list.length+")</div>"+(list.length?"<ul class=\"sentlist\">"+list.map(function(t){return "<li lang=\""+o.lang+"\">"+esc(t)+"</li>"}).join("")+"</ul>":"<p class=\"hint\">Nothing sent yet.</p>");
+    sent.innerHTML="<div class=\"lbl\">Sent messages ("+list.length+")</div>"+(list.length?"<ul class=\"list\" style=\"margin-top:6px\">"+list.map(function(t){return "<li lang=\""+o.lang+"\">"+esc(t)+"</li>"}).join("")+"</ul>":"<p class=\"small muted\">Nothing sent yet.</p>");
   }
   paint();
-  m.appendChild(mkBtn("Clear sent list",function(){list=[];paint()}));
+  m.appendChild(rowWith(mkBtn("Clear sent list",function(){list=[];paint()})));
+  var comp=trackComp(c,f.ta);
   c.watch(f.ta);
-  c.on(f.ta,"compositionstart",function(){composing=true});
-  c.on(f.ta,"compositionend",function(){composing=false;lastEnd=performance.now()});
   c.on(f.ta,"keydown",function(e){
-    if(e.key!=="Enter"||e.shiftKey)return;
-    var inComp=e.isComposing||e.keyCode===229||composing;
-    var justEnded=!inComp&&(performance.now()-lastEnd<80);
+    if(e.key!=="Enter"&&e.code!=="Enter"&&e.code!=="NumpadEnter")return;
+    if(e.shiftKey)return;
+    var inComp=comp.is(e);
+    var justEnded=!inComp&&comp.justEnded();
     var md=c.mode();
     var block=md==="fix"?(inComp||justEnded):md==="iscomp"?e.isComposing:false;
     if(block){
@@ -610,6 +638,7 @@ function buildEnter(c,o){
     }
     var text=f.ta.value;
     if(!text)return;
+    e.preventDefault();
     list.push(text);f.ta.value="";paint();
     if(inComp)c.hit("Message "+JSON.stringify(text)+" was sent by the Enter that confirmed the IME text (isComposing="+e.isComposing+", keyCode="+e.keyCode+").");
     else if(justEnded)c.hit("Message "+JSON.stringify(text)+" was sent by the Enter that confirmed the IME text. compositionend arrived first, so isComposing was already false.");
@@ -625,11 +654,11 @@ function buildFullwidth(c,o){
   var m=c.mock;
   var f=mkField(o.label,o.lang,{id:o.id+"-f",ph:o.ph,single:true});
   m.appendChild(f.wrap);
-  var cp=document.createElement("div");cp.className="cpline";cp.setAttribute("aria-live","polite");m.appendChild(cp);
+  var cp=document.createElement("div");cp.className="cpline";cp.setAttribute("aria-live","polite");cp.lang=o.lang;m.appendChild(cp);
   var res=mkDl();m.appendChild(res);
   function paintCp(){
     var v=f.ta.value;
-    cp.innerHTML=v?Array.from(v).map(function(ch){return "<span class=\"ch"+(WIDE.test(ch)?" wide":"")+"\">"+esc(ch)+"<small>"+hex(ch)+"</small></span>"}).join(""):"<span class=\"hint\">Characters in the box are listed here with their code points. Wide characters get a red border.</span>";
+    cp.innerHTML=v?Array.from(v).map(function(ch){var astral=ch.codePointAt(0)>0xFFFF;return "<span class=\"ch"+(WIDE.test(ch)||astral?" wide":"")+"\">"+(ch===" "||ch==="　"?"␣":esc(ch))+"<small>"+hex(ch)+(astral?" ·2 units":"")+"</small></span>"}).join(""):"<span class=\"small muted\">Characters in the box are listed here with their code points. Full-width characters get a red border.</span>";
   }
   paintCp();
   function paintRes(t,k){res.innerHTML="<dt>App says</dt><dd class=\""+(k||"")+"\">"+esc(t)+"</dd>"}
@@ -637,12 +666,11 @@ function buildFullwidth(c,o){
   c.watch(f.ta);
   c.on(f.ta,"input",paintCp);
   c.on(f.ta,"compositionend",function(){setTimeout(paintCp,0)});
-  var row=document.createElement("div");row.className="row";m.appendChild(row);
-  row.appendChild(mkBtn("Apply",function(){
+  m.appendChild(rowWith(mkBtn("Apply",function(){
     var raw=f.ta.value;
     if(!raw){c.note("Type something in the box first.");return}
     var bad=Array.from(raw).filter(function(ch){return WIDE.test(ch)});
-    var val=c.mode()==="fix"?raw.normalize("NFKC"):raw;
+    var val=c.mode()==="fix"?raw.normalize("NFKC").trim():raw;
     if(!o.re.test(val)){
       if(bad.length){paintRes("Rejected: expected ASCII only","bad");c.hit("The app rejected "+JSON.stringify(raw)+" because it contains "+bad.map(hex).join(", ")+". It expected plain ASCII.")}
       else{paintRes("Format not recognised");c.note("The text does not match the expected format. Check the steps and try again.")}
@@ -651,8 +679,7 @@ function buildFullwidth(c,o){
     paintRes(o.done(val),"good");
     if(bad.length)c.ok("Normalized "+JSON.stringify(raw)+" to "+JSON.stringify(val)+" and accepted it.");
     else c.ok("Accepted "+JSON.stringify(val)+". Only ASCII characters were typed.");
-  },true));
-  row.appendChild(mkBtn("Clear",function(){f.ta.value="";paintCp();paintRes("Waiting for Apply")}));
+  },true),mkBtn("Clear",function(){f.ta.value="";paintCp();paintRes("Waiting for Apply")})));
 }
 
 /* ---------- Builder: Ctrl/Cmd shortcut vs key code ---------- */
@@ -712,9 +739,7 @@ function buildControlled(c,o){
     later();
   });
   c.on(f.ta,"blur",later);
-  var row=document.createElement("div");row.className="row";m.appendChild(row);
-  row.appendChild(mkBtn("Check result",check,true));
-  row.appendChild(mkBtn("Reset",function(){f.ta.value="";model="";typed=false;paint()}));
+  m.appendChild(rowWith(mkBtn("Check result",check,true),mkBtn("Reset",function(){f.ta.value="";model="";typed=false;paint()})));
 }
 
 /* ---------- Builder: custom-drawn editor, candidate window position ---------- */
@@ -725,25 +750,25 @@ function buildCanvas(c,o){
   var ta=document.createElement("textarea");ta.id=o.id+"-hidden";ta.className="cvinput";ta.lang=o.lang;ta.setAttribute("aria-label","Hidden input that receives IME text");
   box.appendChild(cv);box.appendChild(ta);m.appendChild(box);
   var text="",draft="",on=false,blink=true,H=150,F=24,dpr=window.devicePixelRatio||1;
+  var FONT=F+"px \"Hiragino Sans\",\"Yu Gothic UI\",\"Yu Gothic\",Meiryo,\"Noto Sans CJK JP\",\"Malgun Gothic\",sans-serif";
   function col(n,d){return (getComputedStyle(document.documentElement).getPropertyValue(n)||"").trim()||d}
   function size(){cv.width=Math.max(10,cv.clientWidth)*dpr;cv.height=H*dpr}
   function draw(){
     var x=cv.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);
     var W=cv.clientWidth;
-    x.fillStyle=col("--surface","#fff");x.fillRect(0,0,W,H);
-    x.font=F+"px \"Noto Sans JP\",\"Noto Sans KR\",\"Hiragino Sans\",\"Yu Gothic\",\"Malgun Gothic\",sans-serif";
+    x.fillStyle=col("--soft","#F4F5F8");x.fillRect(0,0,W,H);
     x.textBaseline="alphabetic";
     var base=H-28,left=16;
-    if(!text&&!draft){x.fillStyle=col("--muted","#667");x.font="14px sans-serif";x.fillText("Click here, then type with your IME",left,base)}
-    x.font=F+"px \"Noto Sans JP\",\"Noto Sans KR\",\"Hiragino Sans\",\"Yu Gothic\",\"Malgun Gothic\",sans-serif";
-    x.fillStyle=col("--ink","#111");
+    if(!text&&!draft){x.fillStyle=col("--muted","#575C6E");x.font="14px system-ui,sans-serif";x.fillText("Click here, then type with your IME",left,base)}
+    x.font=FONT;
+    x.fillStyle=col("--fg","#14161F");
     x.fillText(text,left,base);
     var w1=x.measureText(text).width;
     x.fillText(draft,left+w1,base);
     var w2=x.measureText(draft).width;
     if(draft)x.fillRect(left+w1,base+5,w2,2);
     var cx=left+w1+w2;
-    if(on&&blink){x.fillStyle=col("--accent","#08f");x.fillRect(cx,base-F,2,F+4)}
+    if(on&&blink){x.fillStyle=col("--accent","#2B46E8");x.fillRect(cx,base-F,2,F+4)}
     if(c.mode()==="fix"){ta.style.left=Math.min(cx,Math.max(0,W-44))+"px";ta.style.top=(base-F)+"px"}
     else{ta.style.left="0px";ta.style.top="0px"}
   }
@@ -757,10 +782,12 @@ function buildCanvas(c,o){
   c.on(ta,"focus",function(){on=true;draw()});
   c.on(ta,"blur",function(){on=false;draw()});
   c.on(window,"resize",function(){size();draw()});
+  var mq=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)");
+  if(mq&&mq.addEventListener)c.on(mq,"change",draw);
   c.interval(function(){blink=!blink;draw()},530);
   var q=document.createElement("fieldset");q.className="ask";
   q.innerHTML="<legend>Where did the candidate list appear?</legend>"+
-   [["near","Right next to the blinking caret (under or beside the text)"],["far","Far from the caret: a screen corner, the top-left of the box, or somewhere else"],["none","No list appeared (the IME may need another Space, or it has no list)"]].map(function(a){return "<label><input type=\"radio\" name=\""+o.id+"-ans\" value=\""+a[0]+"\"><span>"+a[1]+"</span></label>"}).join("");
+   [["near","Right next to the blinking caret (under or beside the text)"],["far","Far from the caret: a screen corner, the top-left of the editor, or somewhere else"],["none","No list appeared (press Space again, or try another IME)"]].map(function(a){return "<label><input type=\"radio\" name=\""+o.id+"-ans\" value=\""+a[0]+"\"><span>"+a[1]+"</span></label>"}).join("");
   m.appendChild(q);
   c.on(q,"change",function(e){
     var v=e.target.value;
@@ -769,9 +796,157 @@ function buildCanvas(c,o){
     else c.note("No candidate list. Press Space again after typing the reading, or try another IME.");
   });
 }
+
+/* ---------- Builder: type-to-rename in a list ---------- */
+function buildRename(c,o){
+  var m=c.mock;
+  var hint=document.createElement("p");hint.className="small muted";hint.textContent="Click a row once to select it, then start typing to rename it. F2 or Enter also starts renaming.";m.appendChild(hint);
+  var ul=document.createElement("ul");ul.className="bin";ul.setAttribute("role","listbox");ul.setAttribute("aria-label","Project bin");m.appendChild(ul);
+  var dl=mkDl();m.appendChild(dl);
+  var names=[],items=[],ed=null,last="—";
+  function paint(){dl.innerHTML="<dt>Last rename</dt><dd lang=\""+o.lang+"\">"+esc(last)+"</dd><dt>Expected</dt><dd lang=\""+o.lang+"\">"+esc(o.expected)+"</dd>"}
+  function build(){
+    ul.innerHTML="";items=[];
+    names.forEach(function(nm,i){
+      var li=document.createElement("li");li.tabIndex=0;li.setAttribute("role","option");li.setAttribute("aria-selected","false");li.lang=o.lang;
+      li.innerHTML='<span class="ic">'+(i<2?"MOV":"SEQ")+'</span><span class="nm"></span>';
+      li.querySelector(".nm").textContent=nm;
+      ul.appendChild(li);items.push(li);
+      c.on(li,"mousedown",function(e){if(ed&&ed.i===i&&!ed.armed)return;e.preventDefault();select(i)});
+      c.on(li,"focus",function(){if(c.mode()==="fix"&&!ed)select(i)});
+      c.on(li,"keydown",function(e){if(e.target===li)rowKey(e,i)});
+    });
+  }
+  function select(i){
+    if(ed)finish(false);
+    items.forEach(function(li,j){li.classList.toggle("sel",j===i);li.setAttribute("aria-selected",String(j===i))});
+    if(c.mode()==="fix")arm(i);else items[i].focus();
+  }
+  function startEdit(st,value){st.armed=false;st.input.classList.remove("armed");st.input.value=value;st.input.select()}
+  function mkInput(i){
+    var inp=document.createElement("input");inp.type="text";inp.lang=o.lang;inp.autocomplete="off";inp.spellcheck=false;inp.setAttribute("aria-label","New name");
+    items[i].appendChild(inp);
+    var st={i:i,input:inp,armed:false,typed:false};
+    st.comp=trackComp(c,inp);
+    c.watch(inp);
+    function wake(){if(st.armed){st.armed=false;st.typed=true;inp.classList.remove("armed")}}
+    c.on(inp,"compositionstart",wake);
+    c.on(inp,"input",wake);
+    c.on(inp,"keydown",function(e){
+      if(e.key==="Enter"||e.code==="Enter"||e.code==="NumpadEnter"){
+        if(st.comp.is(e)||st.comp.justEnded())return;
+        e.preventDefault();
+        if(st.armed){startEdit(st,names[i]);return}
+        finish(true);return;
+      }
+      if(e.key==="F2"&&st.armed){e.preventDefault();startEdit(st,names[i]);return}
+      if(e.key==="Escape"&&!(st.comp.is(e)||st.comp.justEnded())){e.preventDefault();cancel()}
+    });
+    c.on(inp,"blur",function(){setTimeout(function(){if(ed===st)finish(false)},0)});
+    ed=st;return st;
+  }
+  function arm(i){var st=mkInput(i);st.armed=true;st.input.classList.add("armed");st.input.value="";st.input.focus()}
+  function rowKey(e,i){
+    if(ed)return;
+    if(e.key==="F2"||e.key==="Enter"){e.preventDefault();var s=mkInput(i);s.input.focus();startEdit(s,names[i]);return}
+    if(e.ctrlKey||e.metaKey||e.altKey)return;
+    if(!(e.key.length===1||e.key==="Process"||e.keyCode===229))return;
+    e.preventDefault();
+    var st=mkInput(i);st.typed=true;
+    st.input.value=e.key.length===1?e.key:"";st.input.focus();
+    var len=st.input.value.length;st.input.setSelectionRange(len,len);
+    c.note("The list caught the first key (key="+JSON.stringify(e.key)+", code="+e.code+") and opened the editor with it.");
+  }
+  function cancel(){var st=ed;ed=null;st.input.remove();if(items[st.i])items[st.i].focus()}
+  function finish(viaEnter){
+    var st=ed;if(!st)return;ed=null;
+    var v=st.input.value.trim(),wasArmed=st.armed;st.input.remove();
+    if(!wasArmed&&v){
+      names[st.i]=v;items[st.i].querySelector(".nm").textContent=v;last=v;paint();
+      if(st.typed){
+        if(v===o.expected)c.ok("The row was renamed to "+JSON.stringify(v)+". The first key reached the IME.");
+        else c.hit("Expected "+JSON.stringify(o.expected)+" but the row is named "+JSON.stringify(v)+" ("+cps(v)+"). The first key went to the list instead of the IME.");
+      }else c.note("Renamed to "+JSON.stringify(v)+" with F2 or Enter.");
+    }
+    if(viaEnter&&items[st.i]){if(c.mode()==="fix")arm(st.i);else items[st.i].focus()}
+  }
+  function reset(){if(ed){var st=ed;ed=null;st.input.remove()}names=o.names.slice();last="—";build();paint()}
+  reset();
+  m.appendChild(rowWith(mkBtn("Reset names",reset)));
+}
+
+/* ---------- Builder: live search on every input ---------- */
+function buildSearch(c,o){
+  var m=c.mock;
+  var f=mkField(o.label,o.lang,{id:o.id+"-f",ph:o.ph,single:true});m.appendChild(f.wrap);
+  var ul=document.createElement("ul");ul.className="list";ul.lang=o.lang;m.appendChild(ul);
+  var dl=mkDl();m.appendChild(dl);
+  var runs=0,draftRuns=0,lastQ="",flagged=false;
+  function paint(){dl.innerHTML="<dt>Filter runs</dt><dd>"+runs+"</dd><dt>Runs on draft text</dt><dd class=\""+(draftRuns?"bad":"good")+"\">"+draftRuns+"</dd><dt>Last query</dt><dd lang=\""+o.lang+"\">"+(lastQ?esc(JSON.stringify(lastQ)):"—")+"</dd>"}
+  function filter(q,isDraft){
+    runs++;if(isDraft)draftRuns++;lastQ=q;
+    var k=q.trim().toLowerCase();
+    var res=o.items.filter(function(n){return !k||n.toLowerCase().indexOf(k)>=0});
+    ul.innerHTML=res.length?res.map(function(n){return "<li>"+esc(n)+"</li>"}).join(""):"<li class=\"empty\">No effects match "+esc(JSON.stringify(q))+"</li>";
+    paint();
+  }
+  function reset(){f.ta.value="";filter("",false);runs=0;draftRuns=0;lastQ="";paint()}
+  reset();
+  c.watch(f.ta);
+  c.on(f.ta,"compositionstart",function(){flagged=false});
+  c.on(f.ta,"input",function(e){
+    if(e.isComposing){
+      if(c.mode()==="fix")return;
+      filter(f.ta.value,true);
+      if(!flagged){flagged=true;c.hit("The list was filtered with the draft "+JSON.stringify(f.ta.value)+" before a candidate was picked.")}
+      return;
+    }
+    filter(f.ta.value,false);
+  });
+  c.on(f.ta,"compositionend",function(){
+    if(c.mode()!=="fix")return;
+    setTimeout(function(){filter(f.ta.value,false);if(f.ta.value)c.ok("Filtered once, with the committed text "+JSON.stringify(f.ta.value)+".")},0);
+  });
+  m.appendChild(rowWith(mkBtn("Reset",reset)));
+}
+
+/* ---------- Builder: character limit ---------- */
+function buildLimit(c,o){
+  var m=c.mock,L=o.limit;
+  var f=mkField(o.label,o.lang,{id:o.id+"-f",ph:o.ph,single:true});m.appendChild(f.wrap);
+  var cnt=document.createElement("div");cnt.className="small muted";m.appendChild(cnt);
+  var dl=mkDl();m.appendChild(dl);
+  var comp=trackComp(c,f.ta);
+  function count(){cnt.textContent=Array.from(f.ta.value).length+" / "+L+" characters"+(comp.on?" (draft)":"")}
+  function paintRes(t,k){dl.innerHTML="<dt>App says</dt><dd class=\""+(k||"")+"\" lang=\""+o.lang+"\">"+esc(t)+"</dd>"}
+  function enforce(){var a=Array.from(f.ta.value);if(a.length>L){var before=f.ta.value;f.ta.value=a.slice(0,L).join("");c.note("Cut "+JSON.stringify(before)+" to "+L+" characters after the commit.")}}
+  c.watch(f.ta);
+  c.on(f.ta,"input",function(e){
+    if(c.mode()==="fix"){if(!e.isComposing&&!comp.on)enforce();count();return}
+    if(f.ta.value.length>L){
+      var before=f.ta.value;f.ta.value=before.slice(0,L);
+      if(e.isComposing||comp.on)c.hit("The draft was cut to "+L+" characters while you were still typing: "+JSON.stringify(before)+" → "+JSON.stringify(f.ta.value)+".");
+      else c.note("Text was cut to "+L+" characters.");
+    }
+    count();
+  });
+  c.on(f.ta,"compositionend",function(){setTimeout(function(){if(c.mode()==="fix")enforce();count()},0)});
+  function check(){
+    var v=f.ta.value;
+    if(!v){c.note("Type in the box first.");return}
+    if(v===o.expected){paintRes("Saved: "+v,"good");c.ok("The box holds "+JSON.stringify(v)+" ("+Array.from(v).length+" characters), within the "+L+"-character limit.")}
+    else{paintRes("Not the expected name","bad");c.hit("Expected "+JSON.stringify(o.expected)+" but the box holds "+JSON.stringify(v)+" ("+cps(v)+").")}
+  }
+  count();paintRes("Waiting for Check result");
+  m.appendChild(rowWith(mkBtn("Check result",check,true),mkBtn("Reset",function(){f.ta.value="";count();paintRes("Waiting for Check result")})));
+}
 </script>
 <script>
-var M2=[["bug","Buggy app"],["fix","Fixed app"]];
+function hotkeyOpts(sel,codes){return {keys:codes,
+  init:function(){return {play:false,sel:"—"}},
+  apply:function(code,S){if(code==="Space")S.play=!S.play;else S.sel=codes[code]},
+  view:function(S){return [["Playback",S.play?"Playing ▶":"Paused"],[sel,S.sel]]}}}
+function ext(a,b){for(var k in b)a[k]=b[k];return a}
 var SC=[
 /* ---------------- Japanese ---------------- */
 {id:"ja-hotkey",code:"JA-1",grp:"ja",lang:"ja",setup:"ja",fam:"Hotkey leak",
@@ -781,15 +956,15 @@ var SC=[
   ["Click the Clip name box.","A caret blinks in the box."],
   ["Type k y o u. Press nothing else yet.","きょう appears with a dotted underline."],
   ["Press Space once.","A candidate list opens, for example 今日."],
-  ["Press Space once or twice more to move through the list, or press a number such as 2 to pick that candidate. Then press {ENTER}.","The chosen word is in the box."],
+  ["Press Space once or twice more, or press a number such as 2 to pick a candidate. Then press {ENTER}.","The chosen word is in the box."],
   ["Look at Playback and Leaked while composing under the box.","Fixed app: Paused and 0. Buggy app: Playing, or a tool change, and a number above 0."],
-  ["Click outside the box and press Space.","Playback toggles. This is normal shortcut use, not a bug."]],
+  ["Click an empty spot on the bench (not the box) and press Space.","Playback toggles. This is normal shortcut use, not a bug."]],
  exp:"Space and number keys only drive the IME while the draft is underlined. Playback stays paused and no tool changes.",
  act:"Playback started or a tool changed while the IME was converting text.",
  cause:"The shortcut handler recognises plain typing only and ignores IME composition.",
  fix:"Skip shortcuts while event.isComposing is true or event.keyCode is 229, and track compositionstart and compositionend as a backup for browsers that report them in a different order.",
  modes:[["bug","Checks plain typing only"],["fix","Skips shortcuts while composing"]],
- build:function(c){buildHotkey(c,{id:"ja-hk",lang:"ja",label:"Clip name",ph:"Type here with the Japanese IME",selLabel:"Active tool",codes:{Space:"Play / pause",Digit1:"Tool 1",Digit2:"Tool 2",Digit3:"Tool 3"}})}},
+ build:function(c){buildKeys(c,ext({id:"ja-hk",lang:"ja",label:"Clip name",ph:"Type here with the Japanese IME"},hotkeyOpts("Active tool",{Space:"Play / pause",Digit1:"Tool 1",Digit2:"Tool 2",Digit3:"Tool 3"})))}},
 
 {id:"ja-enter",code:"JA-2",grp:"ja",lang:"ja",setup:"ja",fam:"Enter submits early",
  title:"Enter sends the message while you confirm",
@@ -805,14 +980,14 @@ var SC=[
  act:"The message was sent by the Enter that confirmed the conversion.",
  cause:"The Enter handler does not treat the confirming Enter as part of IME composition.",
  fix:"Ignore Enter when event.isComposing or keyCode 229 is set, and also when compositionend fired a moment earlier on the same key press (Safari order).",
- modes:[["bug","No IME check"],["iscomp","isComposing check only"],["fix","Full guard"]],
+ modes:[["bug","No IME check"],["iscomp","isComposing only"],["fix","Full guard"]],
  build:function(c){buildEnter(c,{id:"ja-en",lang:"ja",ph:"Type here with the Japanese IME"})}},
 
 {id:"ja-fullwidth",code:"JA-3",grp:"ja",lang:"ja",setup:"ja",fam:"Full-width leakage",
  title:"Full-width digits in a frame field",
  about:"A duration field accepts ASCII digits only. Japanese IMEs can produce full-width digits such as １２０, which look similar but are different characters.",
  steps:[
-  ["Set the mode to Hiragana (see the keyboard setup above), then click the Duration box.","A caret blinks in the box."],
+  ["Set the mode to Hiragana (see the setup above), then click the Duration box.","A caret blinks in the box."],
   ["Type 1 2 0.","The digits may already be wide. If they are thin, continue to step 3."],
   ["Press {F9}.","The draft changes to wide １２０."],
   ["Press {ENTER} to commit the draft.","The code points below the box show U+FF11, U+FF12, U+FF10 with red borders."],
@@ -820,7 +995,7 @@ var SC=[
  exp:"120 frames are accepted whatever width the IME produced.",
  act:"The field holds １２０ (U+FF11 U+FF12 U+FF10) and the app rejects it.",
  cause:"The field assumes ASCII digits and does not normalize full-width characters from the IME.",
- fix:"Normalize input with NFKC before parsing, or switch the field to direct input (IME off) when it gains focus.",
+ fix:"Normalize input with NFKC before parsing (this also turns U+3000 into a normal space), or switch the field to direct input (IME off) when it gains focus.",
  modes:[["bug","Reads raw text"],["fix","Normalizes to ASCII first"]],
  build:function(c){buildFullwidth(c,{id:"ja-fw",lang:"ja",label:"Duration in frames (digits only)",ph:"120",re:/^\d+$/,done:function(v){return v+" frames accepted"}})}},
 
@@ -844,7 +1019,7 @@ var SC=[
  title:"Candidate list far from the caret",
  about:"This editor draws its own text on a canvas. A hidden input receives the IME text, and the OS places the candidate list next to that hidden input. If the hidden input is parked in a corner, the list opens in the corner. You judge the position by eye.",
  steps:[
-  ["Click inside the dark editor below.","A blinking caret appears at the left of the baseline."],
+  ["Click inside the editor below.","A blinking caret appears at the left of the baseline."],
   ["Type k y o u.","きょう appears underlined in the editor."],
   ["Press Space.","The candidate list opens."],
   ["Look at where the list opened and answer the question below the editor.","Buggy app: usually near the top-left of the editor. Fixed app: next to the caret."],
@@ -855,6 +1030,62 @@ var SC=[
  fix:"Move the hidden input to the caret position on every update and give it the same font size, so the OS anchors the candidate list there. Test with rotated, scaled and scrolled containers too.",
  modes:[["bug","Input stays top-left"],["fix","Input follows the caret"]],
  build:function(c){buildCanvas(c,{id:"ja-cv",lang:"ja"})}},
+
+{id:"ja-esc",tag:"Esc closes dialog",code:"JA-6",grp:"ja",lang:"ja",setup:"ja",fam:"Navigation key leak",
+ title:"Esc closes the dialog while you cancel the draft",
+ about:"A Rename clip dialog closes on Esc. The IME also uses Esc: the first press reverts a conversion to its reading, the next cancels the draft. The buggy dialog closes on any Esc, so the user loses the dialog when they only meant to undo a conversion.",
+ steps:[
+  ["Click the New name box in the dialog.","A caret blinks in the box."],
+  ["Type h e n s h u u.","へんしゅう appears underlined."],
+  ["Press Space.","The draft converts, for example to 編集."],
+  ["Press Esc once.","Fixed app: the draft goes back to へんしゅう and the dialog stays open. Buggy app: the dialog closes."],
+  ["Press Esc again.","Fixed app: the draft is cleared or cancelled (depends on the IME). The dialog is still open."],
+  ["Press Esc with nothing underlined.","The dialog closes. This is normal."]],
+ exp:"Esc only reverts or cancels the draft while it is underlined. The dialog closes on the next Esc.",
+ act:"The dialog closed on the Esc that was meant for the IME, and the draft was lost.",
+ cause:"The dialog's Esc handler does not check whether the IME is composing.",
+ fix:"Ignore Esc while event.isComposing is true or keyCode is 229, and for a moment after compositionend (Safari order).",
+ modes:[["bug","Closes on any Esc"],["fix","Ignores Esc while composing"]],
+ build:function(c){buildEsc(c,{id:"ja-esc",lang:"ja",title:"Rename clip",label:"New name",ph:"Type here with the Japanese IME"})}},
+
+{id:"ja-arrows",tag:"Arrows and Backspace",code:"JA-7",grp:"ja",lang:"ja",setup:"ja",fam:"Navigation key leak",
+ title:"Arrow keys move the playhead while you pick segments",
+ about:"In the demo editor, ← and → step one frame and Backspace or Delete removes a clip. The IME uses the same keys: Backspace edits the reading, arrows move between conversion segments, and Shift+arrow resizes a segment. The buggy app lets these keys through.",
+ steps:[
+  ["Click the Clip name box.","A caret blinks in the box."],
+  ["Type k y o u h a a m e d a.","きょうはあめだ appears underlined."],
+  ["Press Backspace once, then type d a.","だ is removed and typed again. Only the draft changes."],
+  ["Press Space.","The draft converts, for example to 今日は雨だ. One segment has a thick underline."],
+  ["Press → to move to the next segment, then Shift+← to resize it.","The segment boundary changes and the candidates update. Details differ by IME."],
+  ["Press {ENTER} to commit.","The text is in the box."],
+  ["Look at Playhead, Clips and Leaked while composing.","Fixed app: frame 0, 3 of 3 clips, 0 leaks. Buggy app: the playhead moved, a clip was deleted, and the count is above 0."],
+  ["Click an empty spot on the bench and press → or Backspace.","The playhead moves or a clip is deleted. This is normal shortcut use."]],
+ exp:"Arrows and Backspace only edit the draft while it is underlined. The playhead stays at frame 0 and no clip is deleted.",
+ act:"The playhead moved or a clip was deleted while the IME was using the key.",
+ cause:"The timeline shortcuts are global and ignore IME composition in focused text fields.",
+ fix:"Skip shortcuts while event.isComposing is true or keyCode is 229. Do not run timeline shortcuts at all while a text field has focus, except ones with a modifier.",
+ modes:[["bug","Checks plain typing only"],["fix","Skips shortcuts while composing"]],
+ build:function(c){buildKeys(c,{id:"ja-ar",lang:"ja",label:"Clip name",ph:"Type here with the Japanese IME",
+   keys:{ArrowLeft:"Playhead −1 frame",ArrowRight:"Playhead +1 frame",Backspace:"Delete clip",Delete:"Delete clip"},
+   init:function(){return {frame:0,clips:3}},
+   apply:function(code,S){if(code==="ArrowLeft")S.frame--;else if(code==="ArrowRight")S.frame++;else S.clips=Math.max(0,S.clips-1)},
+   view:function(S){return [["Playhead","Frame "+S.frame],["Clips",S.clips+" of 3"]]}})}},
+
+{id:"ja-tab",tag:"Tab and predictions",code:"JA-8",grp:"ja",lang:"ja",setup:"ja",fam:"Navigation key leak",
+ title:"Tab picks a prediction, but focus jumps",
+ about:"A clip info form moves focus from Title to Description on Tab with its own code. Microsoft IME uses Tab to move into the prediction list, and the Apple IME uses it in the candidate window. The buggy form moves focus anyway, so the prediction is never picked.",
+ steps:[
+  ["Click the Title box.","A caret blinks in the box."],
+  ["Type o t u k a.","おつか appears underlined. A prediction list may open, for example お疲れ様です."],
+  ["Press Tab.","Fixed app: the IME uses Tab and the caret stays in Title. Buggy app: focus jumps to Description."],
+  ["Press {ENTER} to commit.","The chosen text is in Title."],
+  ["Press Tab with nothing underlined.","Focus moves to Description. This is normal."]],
+ exp:"Tab only drives the IME while the draft is underlined. Focus moves on the next Tab.",
+ act:"Focus moved to Description while the IME was using Tab.",
+ cause:"The form handles Tab itself and does not check whether the IME is composing.",
+ fix:"Leave Tab to the IME while event.isComposing is true or keyCode is 229. No prediction list? On Windows, turn on predictive input in Microsoft IME settings. The Tab still arrives during composition, so the bug shows either way.",
+ modes:[["bug","Moves focus on any Tab"],["fix","Leaves Tab to the IME"]],
+ build:function(c){buildTab(c,{id:"ja-tb",lang:"ja",label1:"Title",label2:"Description",ph:"Type here with the Japanese IME"})}},
 
 /* ---------------- Korean ---------------- */
 {id:"ko-hotkey",code:"KO-1",grp:"ko",lang:"ko",setup:"ko",fam:"Hotkey leak",
@@ -871,7 +1102,7 @@ var SC=[
  cause:"The shortcut handler recognises plain typing only and ignores IME composition.",
  fix:"Skip shortcuts while event.isComposing is true or event.keyCode is 229.",
  modes:[["bug","Checks plain typing only"],["fix","Skips shortcuts while composing"]],
- build:function(c){buildHotkey(c,{id:"ko-hk",lang:"ko",label:"Clip name",ph:"Type here with the Korean IME",selLabel:"Active tool",codes:{Space:"Play / pause",Digit1:"Tool 1",Digit2:"Tool 2",Digit3:"Tool 3"}})}},
+ build:function(c){buildKeys(c,ext({id:"ko-hk",lang:"ko",label:"Clip name",ph:"Type here with the Korean IME"},hotkeyOpts("Active tool",{Space:"Play / pause",Digit1:"Tool 1",Digit2:"Tool 2",Digit3:"Tool 3"})))}},
 
 {id:"ko-enter",code:"KO-2",grp:"ko",lang:"ko",setup:"ko",fam:"Enter submits early",
  title:"Enter sends and leaves the last syllable behind",
@@ -886,7 +1117,7 @@ var SC=[
  act:"A message was sent before the syllable was committed, or the last syllable came back after sending.",
  cause:"Enter sends and clears the box while the last syllable is still in composition.",
  fix:"Ignore Enter during composition, send after compositionend, and clear the box only after that.",
- modes:[["bug","No IME check"],["iscomp","isComposing check only"],["fix","Full guard"]],
+ modes:[["bug","No IME check"],["iscomp","isComposing only"],["fix","Full guard"]],
  build:function(c){buildEnter(c,{id:"ko-en",lang:"ko",ph:"Type here with the Korean IME"})}},
 
 {id:"ko-key",code:"KO-3",grp:"ko",lang:"ko",setup:"ko",fam:"Key code vs character",
@@ -921,12 +1152,27 @@ var SC=[
  modes:[["bug","Rewrites the box on every key"],["fix","Waits for composition to end"]],
  build:function(c){buildControlled(c,{id:"ko-lc",lang:"ko",label:"Layer name",ph:"Type 한글 with the Korean IME",expected:"한글"})}},
 
+{id:"ko-rename",code:"KO-5",grp:"ko",lang:"ko",setup:"ko",fam:"First key lost",
+ title:"Type-to-rename loses the first jamo",
+ about:"A project bin starts renaming when you type on a selected row. The buggy list catches that first key itself and opens the editor with it, so the IME never sees it. The fixed list keeps an invisible text box focused on the selected row, so the IME starts composing from the very first key.",
+ steps:[
+  ["Switch to Hangul mode. Click clip_01.mov once to select it. Do not double-click.","The row is highlighted."],
+  ["Type g k s r m f straight away.","Fixed app: an edit box opens on the row and 한글 builds up normally. Buggy app: the first letter shows as g or ㅎ and the rest does not join up."],
+  ["Press {ENTER} to finish. Press it twice if the last syllable is still underlined.","The row shows the new name."],
+  ["Look at the result, then press Reset names, switch the app version and repeat.","Fixed: the row is named 한글. Buggy: something like gㅏㄴ글 or ㅎㅏㄴ글."]],
+ exp:"The row is renamed to 한글.",
+ act:"The first key went to the list instead of the IME, so the name starts with a Latin letter or a loose jamo.",
+ cause:"The list handles the first keydown itself and opens the editor afterwards, so the IME was not active for that key.",
+ fix:"Keep an editable element focused on the selected item (transparent until typing starts), so the IME composes from the first key. Open the visible editor on compositionstart or input.",
+ modes:[["bug","Opens editor on keydown"],["fix","Text box ready on select"]],
+ build:function(c){buildRename(c,{id:"ko-rn",lang:"ko",expected:"한글",names:["clip_01.mov","clip_02.mov","Sequence 01"]})}},
+
 /* ---------------- Chinese ---------------- */
 {id:"zhs-fullwidth",code:"ZH-1",grp:"zh",lang:"zh-CN",setup:"zhs",fam:"Full-width leakage",
  title:"Full-width colon in a timecode (Simplified)",
  about:"A timecode field accepts digits and an ASCII colon. In Chinese mode the IME turns a typed colon into the full-width ：, which the parser rejects.",
  steps:[
-  ["Switch to Chinese mode (see the keyboard setup above), then click the Timecode box.","A caret blinks in the box."],
+  ["Switch to Chinese mode (see the setup above), then click the Timecode box.","A caret blinks in the box."],
   ["Type 1 2.","Plain digits appear."],
   ["Press Shift+; to type a colon.","A wide ： appears. Its code point is U+FF1A with a red border."],
   ["Type 3 0.","The box reads 12：30."],
@@ -951,40 +1197,68 @@ var SC=[
  cause:"The shortcut handler recognises plain typing only and ignores IME composition.",
  fix:"Skip shortcuts while event.isComposing is true or event.keyCode is 229.",
  modes:[["bug","Checks plain typing only"],["fix","Skips shortcuts while composing"]],
- build:function(c){var codes={Space:"Play / pause"};for(var i=1;i<=9;i++)codes["Digit"+i]="Track "+i;buildHotkey(c,{id:"zht-hk",lang:"zh-TW",label:"Clip name",ph:"Type here with the Zhuyin IME",selLabel:"Active track",codes:codes})}}
+ build:function(c){var codes={Space:"Play / pause"};for(var i=1;i<=9;i++)codes["Digit"+i]="Track "+i;buildKeys(c,ext({id:"zht-hk",lang:"zh-TW",label:"Clip name",ph:"Type here with the Zhuyin IME"},hotkeyOpts("Active track",codes)))}},
+
+{id:"zhs-search",tag:"Live search",code:"ZH-3",grp:"zh",lang:"zh-CN",setup:"zhs",fam:"Acts on draft text",
+ title:"Live search filters on pinyin letters",
+ about:"An effects panel filters its list on every input event. While you type pinyin, those events carry letters such as mo'hu, not Chinese text, so the buggy list empties and flickers before you pick a candidate. With server-side search, each of those events would also send a request.",
+ steps:[
+  ["Switch to Chinese mode and click the Search effects box.","All eight effects are listed."],
+  ["Type m o h u.","mohu (or mo'hu) is underlined with candidates. Fixed app: the list stays as it was. Buggy app: the list shows No effects match."],
+  ["Press Space to pick 模糊.","Both versions now list 高斯模糊 and 方向模糊."],
+  ["Look at Runs on draft text.","Fixed: 0. Buggy: 1 or more."]],
+ exp:"The list filters once, after 模糊 is committed.",
+ act:"The list was filtered with the pinyin draft while typing.",
+ cause:"The search handler runs on every input event, including events fired during composition.",
+ fix:"Skip filtering while event.isComposing is true and filter on compositionend. If you want suggestions while typing, filter with the draft but never write back to the field.",
+ modes:[["bug","Filters on every input"],["fix","Waits for the commit"]],
+ build:function(c){buildSearch(c,{id:"zh-se",lang:"zh-CN",label:"Search effects",ph:"Type with the Pinyin IME",items:["高斯模糊","方向模糊","锐化","色彩校正","亮度与对比度","裁剪","交叉溶解","基本字幕"]})}},
+
+{id:"zhs-limit",tag:"Length limit",code:"ZH-4",grp:"zh",lang:"zh-CN",setup:"zhs",fam:"Acts on draft text",
+ title:"A 6-character limit cuts the pinyin draft",
+ about:"A marker name allows 6 characters. 中文字幕 is only 4, but its pinyin draft zhongwenzimu is 12 letters. The buggy field enforces the limit on every input event, so it cuts the draft before you can pick the candidate.",
+ steps:[
+  ["Switch to Chinese mode and click the Marker name box.","The counter reads 0 / 6."],
+  ["Type z h o n g w e n z i m u without pressing Space.","Fixed app: the pinyin keeps growing, underlined, and 中文字幕 appears in the candidate list. Buggy app: the draft stops at 6 letters and turns into plain letters."],
+  ["Press Space or 1 to pick 中文字幕.","Fixed app: the box holds 中文字幕 and the counter reads 4 / 6."],
+  ["Press Check result.","Fixed: passes. Buggy: the box does not hold 中文字幕."]],
+ exp:"中文字幕 (4 characters) fits the 6-character limit and is accepted.",
+ act:"The limit was applied to the 12-letter pinyin draft and broke the input.",
+ cause:"The length limit runs on every input event, including the unfinished draft, and counts UTF-16 code units.",
+ fix:"Enforce the limit after compositionend, never while event.isComposing is true. Count characters with Array.from (code points) so 𠮷 counts as one.",
+ modes:[["bug","Cuts on every input"],["fix","Cuts after the commit"]],
+ build:function(c){buildLimit(c,{id:"zh-lm",lang:"zh-CN",label:"Marker name (max 6 characters)",ph:"Type with the Pinyin IME",limit:6,expected:"中文字幕"})}}
 ];
 </script>
 <script>
 (function(){
 function $(i){return document.getElementById(i)}
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function idx(id){for(var i=0;i<SC.length;i++)if(SC[i].id===id)return i;return -1}
 var reduce=false;try{reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
 var isMac=/Mac|iPhone|iPad/.test(navigator.userAgent);
 var plat=store("ime-plat")==="mac"?"mac":store("ime-plat")==="win"?"win":(isMac?"mac":"win");
 var solved={};try{solved=JSON.parse(store("ime-solved2")||"{}")||{}}catch(e){solved={}}
-var cur=0,mode="",facts=[],hits=0,oks=0,evlog=[],cleanups=[];
+var cur=Math.max(0,idx(store("ime-lab")||"")),mode="",facts=[],hits=0,oks=0,evlog=[],cleanups=[];
 
-/* ---------- Navigation ---------- */
-var VIEWS=["guide","compare","lab","inspector"],curView=null;
-function show(v){
-  var saved=null;try{saved=sessionStorage.getItem("ime-view")}catch(e){}
-  var h=v||(location.hash||"").replace("#","")||saved||"";if(VIEWS.indexOf(h)<0)h="guide";
-  if(h===curView)return;
-  curView=h;
-  try{sessionStorage.setItem("ime-view",h)}catch(e){}
-  VIEWS.forEach(function(x){$("v-"+x).hidden=x!==h});
-  document.querySelectorAll("nav.views button").forEach(function(b){if(b.dataset.v===h)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
-  if(h==="lab")render();else cleanup();
-  window.scrollTo(0,0);
+/* ---------- Navigation: #guide, #lab/ja-enter, ... ---------- */
+var VIEWS=["guide","compare","lab","checklist","inspector"],curView=null;
+function show(){
+  var p=(location.hash||"").replace(/^#/,"").split("/"),v=p[0],labChanged=false;
+  if(VIEWS.indexOf(v)<0)v="guide";
+  if(v==="lab"){
+    var i=idx(p[1]||"");if(i<0)i=cur;
+    labChanged=i!==cur;cur=i;store("ime-lab",SC[cur].id);
+    if(p[1]!==SC[cur].id)history.replaceState(null,"","#lab/"+SC[cur].id);
+  }
+  var viewChanged=v!==curView;curView=v;
+  VIEWS.forEach(function(x){$("v-"+x).hidden=x!==v});
+  document.querySelectorAll("nav.views a").forEach(function(a){if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  if(v==="lab"){if(viewChanged||labChanged){renderList();render()}}else cleanup();
+  if(viewChanged)window.scrollTo(0,0);
 }
-window.addEventListener("hashchange",function(){show()});
-document.querySelectorAll("nav.views button").forEach(function(b){b.addEventListener("click",function(){show(b.dataset.v)})});
-function openLab(id){
-  for(var i=0;i<SC.length;i++)if(SC[i].id===id)cur=i;
-  renderList();
-  if(curView==="lab")render();else show("lab");
-}
-$("v-guide").addEventListener("click",function(e){var b=e.target.closest("[data-goto]");if(b)openLab(b.dataset.goto)});
+window.addEventListener("hashchange",show);
+document.addEventListener("click",function(e){var b=e.target.closest("[data-goto]");if(b){e.preventDefault();location.hash="#lab/"+b.dataset.goto}});
 
 /* ---------- Basics: live IME demo ---------- */
 var DEMO=[
@@ -1034,18 +1308,22 @@ $("demo-langs").addEventListener("click",function(e){
 dKeys=["n","i","h","o","n","g","o","Space"];dEv=['compositionstart ""','compositionupdate "にほんご"','keydown key="Process" isComposing=true keyCode=229'];
 
 /* ---------- Compare ---------- */
-var NATIVE={zhcn:["简体中文","Chinese (Simplified)"],zhtw:["繁體中文","Chinese (Traditional)"],ja:["日本語","Japanese"],ko:["한국어","Korean"]};
 var cl=2;
 function renderCompare(){
   var L=LANGS[cl];
-  $("cmp-tabs").innerHTML=LANGS.map(function(x,i){var n=NATIVE[x.id]||[x.tab,""];return '<button type="button" data-i="'+i+'" aria-pressed="'+(i===cl)+'"><b lang="'+x.lang+'">'+n[0]+'</b><span>'+esc(n[1])+'</span></button>'}).join("");
-  function col(c,k,label){return '<div class="oswin '+k+'"><div class="oswin-bar"><span class="chip '+k+'">'+label+'</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div><div class="oswin-body"><h3>'+esc(c.name)+'</h3><div class="hint" lang="'+L.lang+'">'+esc(c.native)+'</div><div class="typed" lang="'+L.lang+'">'+esc(c.typed)+'</div><ul>'+c.items.map(function(i){return '<li lang="'+L.lang+'">'+esc(i)+'</li>'}).join("")+'</ul></div></div>'}
-  $("cmp-root").innerHTML='<div class="osgrid">'+col(L.ms,"win","Windows")+col(L.mac,"mac","macOS")+'</div><div class="trouble"><span class="ic" aria-hidden="true">!</span><div><h3>Typical trouble spots</h3><p class="hint" lang="'+L.lang+'">'+esc(L.bug)+'</p></div></div><p class="note">Key names and defaults can change between OS versions and user settings. Confirm on the build you are testing.</p>';
+  $("cmp-tabs").innerHTML=LANGS.map(function(x,i){return '<button type="button" data-i="'+i+'" aria-pressed="'+(i===cl)+'"><span lang="'+x.lang+'">'+x.native+'</span> <span class="small">'+esc(x.name)+'</span></button>'}).join("");
+  var chips=L.labs.map(function(id){return '<button type="button" class="chip" data-goto="'+id+'">'+SC[idx(id)].code+'</button>'}).join(" ");
+  var g=L.lang;
+  $("cmp-root").innerHTML='<pre class="example" lang="'+g+'">'+esc(L.ex)+'</pre>'+
+    '<div class="tw"><table class="t wide cmp"><thead><tr><th></th><th>Windows · '+lt(L.cols[0],g)+'</th><th>macOS · '+lt(L.cols[1],g)+'</th></tr></thead><tbody>'+
+    L.rows.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td>'+lt(r[1],g)+'</td><td>'+lt(r[2],g)+'</td></tr>'}).join("")+
+    '</tbody></table></div>'+
+    '<div class="stack" style="gap:8px"><h3>Typical trouble spots</h3><p class="muted">'+lt(L.bug,g)+'</p><div class="row">'+chips+'</div></div>';
 }
 $("cmp-tabs").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;cl=+b.dataset.i;renderCompare()});
 
 /* ---------- Bug Lab engine ---------- */
-function tok(s){return String(s).replace(/\{ENTER\}/g,plat==="mac"?"Return":"Enter").replace(/\{MOD\}/g,plat==="mac"?"Cmd":"Ctrl").replace(/\{F9\}/g,plat==="mac"?"Fn+F9":"F9")}
+function tok(s){return String(s).replace(/\{ENTER\}/g,plat==="mac"?"Return":"Enter").replace(/\{MOD\}/g,plat==="mac"?"Cmd":"Ctrl").replace(/\{F9\}/g,plat==="mac"?"Fn+F9 (or Ctrl+L)":"F9")}
 function cleanup(){cleanups.forEach(function(f){try{f()}catch(e){}});cleanups=[]}
 var ctx={
   mock:null,
@@ -1069,37 +1347,29 @@ function renderList(){
     out+='<div class="grp"><span class="lbl">'+esc(GRP[g])+'</span>';
     SC.forEach(function(sc,i){
       if(sc.grp!==g)return;
-      out+='<button type="button" data-i="'+i+'" title="'+esc(sc.title)+'"'+(i===cur?' aria-current="true"':'')+'><span class="dot'+(solved[sc.id]?' ok':'')+'" aria-hidden="true"></span><b>'+sc.code+'</b><span>'+esc(sc.fam)+'</span>'+(solved[sc.id]?'<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">reproduced</span>':'')+'</button>';
+      out+='<button type="button" data-i="'+i+'" title="'+esc(sc.title)+'"'+(i===cur?' aria-current="true"':'')+'>'+(solved[sc.id]?'<span class="dot" aria-hidden="true"></span>':'')+'<b>'+sc.code+'</b><span>'+esc(sc.tag||sc.fam)+'</span>'+(solved[sc.id]?'<span class="sr">, reproduced</span>':'')+'</button>';
     });
     out+='</div>';
   });
   SC.forEach(function(sc){if(solved[sc.id])n++});
   $("sclist").innerHTML=out;
-  document.querySelectorAll(".progbar").forEach(function(b){b.style.width=(n/SC.length*100)+"%"});
   document.querySelectorAll(".proghint").forEach(function(t){t.textContent=n+" of "+SC.length+" bugs reproduced"});
 }
 function render(){
   cleanup();
   var sc=SC[cur],S=SETUP[sc.setup],P=S[plat];
-  var addPath=plat==="mac"?"System Settings → Keyboard → Text Input → Edit… → + → choose "+S.name+" → add \""+P.src+"\".":"Settings → Time & language → Language & region → Add a language → choose "+S.name+" → Next → Install. Keep the keyboard \""+P.src+"\" in the language options.";
+  var addPath=plat==="mac"?"System Settings → Keyboard → Text Input → Edit… → + → choose "+S.name+" → add “"+P.src+"”.":"Settings → Time & language → Language & region → Add a language → choose "+S.name+" → Next → Install. Keep the keyboard “"+P.src+"” in the language options.";
   mode=sc.modes[0][0];
+  var g=sc.lang;
   $("scene").innerHTML=
-   '<div class="brief">'+
-    '<div class="scene-title"><div class="row"><span class="chip">'+sc.code+'</span><span class="chip">'+esc(sc.fam)+'</span></div><h2>'+esc(sc.title)+'</h2><p class="hint">'+esc(tok(sc.about))+'</p></div>'+
-    '<div class="setupcard"><span class="lbl">Before you start · '+(plat==="mac"?"macOS":"Windows")+' keyboard</span>'+
-     '<div class="src" lang="'+sc.lang+'">'+esc(P.src)+'</div>'+
-     '<dl class="kv"><dt>Layout</dt><dd>'+esc(P.layout)+'</dd><dt>Mode</dt><dd lang="'+sc.lang+'">'+esc(P.mode)+'</dd><dt>Switch with</dt><dd lang="'+sc.lang+'">'+esc(P.sw)+'</dd></dl>'+
-     '<details><summary>This input source is not installed</summary><p>'+esc(addPath)+'</p></details></div>'+
-    '<div class="stepcard"><div class="row" style="justify-content:space-between"><span class="lbl">Steps</span><span class="hint">Tick each step as you go</span></div><ol class="steps">'+
-     sc.steps.map(function(s,i){var id="st-"+sc.id+"-"+i;return '<li style="position:relative"><input type="checkbox" id="'+id+'"><label for="'+id+'"><span class="num">'+(i+1)+'</span><span class="do" lang="'+sc.lang+'">'+esc(tok(s[0]))+'</span><span class="see" lang="'+sc.lang+'">You should see: '+esc(tok(s[1]))+'</span></label></li>'}).join("")+
-    '</ol></div>'+
-    '<details><summary>Root cause and fix</summary><p>'+esc(sc.cause)+'</p><p>'+esc(sc.fix)+'</p></details>'+
-   '</div>'+
-   '<div class="bench">'+
-    '<div class="benchcard"><div class="benchbar"><span class="lbl">Test bench · demo app</span><div class="seg" id="modes" role="group" aria-label="Demo app version">'+sc.modes.map(function(m,i){return '<button type="button" data-m="'+m[0]+'" aria-pressed="'+(i===0)+'">'+esc(m[1])+'</button>'}).join("")+'</div></div>'+
-     '<div class="mock" id="mock"></div><div id="result"></div></div>'+
-    '<div class="evcard"><span class="lbl">Events your browser received</span><ul class="log" id="evlog" aria-label="Event log"></ul></div>'+
-   '</div>';
+    '<div class="s-title"><div class="row"><span class="chip">'+sc.code+'</span><span class="chip">'+esc(sc.fam)+'</span></div><h2>'+lt(sc.title,g)+'</h2><p class="muted">'+lt(tok(sc.about),g)+'</p></div>'+
+    '<details class="s-setup"><summary>Set up: <b>'+lt(P.src,g)+'</b> · '+lt(P.short,g)+'</summary>'+
+     '<dl class="kv"><dt>Layout</dt><dd>'+lt(P.layout,g)+'</dd><dt>Mode</dt><dd>'+lt(P.mode,g)+'</dd><dt>Switch with</dt><dd>'+lt(P.sw,g)+'</dd><dt>Not installed?</dt><dd>'+esc(addPath)+'</dd></dl></details>'+
+    '<ol class="steps s-steps">'+sc.steps.map(function(s){return '<li><span class="do">'+lt(tok(s[0]),g)+'</span><span class="see">'+lt(tok(s[1]),g)+'</span></li>'}).join("")+'</ol>'+
+    '<details class="s-cause"><summary>Root cause and fix</summary><p>'+lt(tok(sc.cause),g)+'</p><p>'+lt(tok(sc.fix),g)+'</p></details>'+
+    '<div class="bench"><div class="bench-head"><span class="lbl">Demo app</span><div class="seg" id="modes" role="group" aria-label="Demo app version">'+sc.modes.map(function(m,i){return '<button type="button" data-m="'+m[0]+'" aria-pressed="'+(i===0)+'">'+esc(m[1])+'</button>'}).join("")+'</div></div>'+
+     '<div class="mock" id="mock"></div><div id="result"></div>'+
+     '<div class="events"><span class="lbl">Events your browser received</span><ul class="log" id="evlog" aria-label="Event log"></ul></div></div>';
   start();
 }
 function start(){
@@ -1114,11 +1384,24 @@ function paintLog(){
   el.innerHTML=evlog.length?evlog.map(function(l){return '<li class="'+l[1]+'">'+esc(l[0])+'</li>'}).join(""):'<li>Nothing yet. Click the box on the bench and start typing.</li>';
   el.scrollTop=el.scrollHeight;
 }
+function modeLabel(){var sc=SC[cur];for(var i=0;i<sc.modes.length;i++)if(sc.modes[i][0]===mode)return sc.modes[i][1];return mode}
 function report(){
-  var sc=SC[cur],S=SETUP[sc.setup][plat];
+  var sc=SC[cur],P=SETUP[sc.setup][plat];
   var steps=sc.steps.map(function(s,i){return (i+1)+". "+tok(s[0])}).join("\n");
   var bad=facts.filter(function(f){return f[0]==="bad"}).slice(-2).map(function(f){return f[1]}).join(" ");
-  return "Title: ["+sc.lang+"] "+sc.title+"\nEnvironment: "+(plat==="mac"?"macOS":"Windows")+", "+S.src+" (add OS and IME version)\nBrowser: "+navigator.userAgent.slice(0,120)+"\nSteps:\n"+steps+"\nExpected: "+tok(sc.exp)+"\nActual: "+sc.act+" "+bad+"\nSuspected cause: "+sc.cause+"\nNotes: Also test the other platform and the other IMEs for this language.";
+  return "Title: ["+sc.lang+"] "+sc.title+
+    "\nEnvironment:"+
+    "\n- OS: "+(plat==="mac"?"macOS":"Windows")+" (version and build: ___)"+
+    "\n- Input source: "+P.src+" (IME version: ___)"+
+    "\n- IME settings: "+P.cfg+
+    "\n- Keyboard: US QWERTY (or JIS / Korean: ___)"+
+    "\n- Browser: "+navigator.userAgent.slice(0,140)+
+    "\n- Demo app version: "+modeLabel()+
+    "\nSteps:\n"+steps+
+    "\nExpected: "+tok(sc.exp)+
+    "\nActual: "+sc.act+(bad?" "+bad:"")+
+    "\nSuspected cause: "+sc.cause+
+    "\nNotes: Also test the other platform and the other IMEs for this language.";
 }
 function paintResult(){
   var el=$("result");if(!el)return;
@@ -1126,8 +1409,8 @@ function paintResult(){
   var head={wait:"Waiting for you",bug:"Bug reproduced",ok:"Handled correctly"}[st];
   var sub={wait:"Follow the steps. This updates from the real events your keyboard produces.",bug:"This app version did the wrong thing. Switch to the fixed version and repeat the steps to compare.",ok:"The app behaved correctly for what you did. Try the other app version to compare."}[st];
   var f=facts.slice(-6).reverse().map(function(x){return '<li class="'+x[0]+'">'+esc(x[1])+'</li>'}).join("");
-  el.innerHTML='<div class="verdict '+st+'" aria-live="polite"><div class="vh"><i aria-hidden="true"></i><b>'+head+'</b></div><span class="hint">'+sub+'</span>'+(f?'<ul class="facts">'+f+'</ul>':'')+'</div>'+
-    (hits?'<div class="reportbox"><div class="row" style="justify-content:space-between"><span class="lbl">Bug report draft</span><button type="button" class="btn sm primary" id="copyrep">Copy report</button></div><pre class="report" id="rep">'+esc(report())+'</pre></div>':'');
+  el.innerHTML='<div class="verdict '+st+'" aria-live="polite"><b>'+head+'</b><span class="small muted">'+sub+'</span>'+(f?'<ul class="facts">'+f+'</ul>':'')+'</div>'+
+    (hits?'<div class="reportbox"><div class="row" style="justify-content:space-between"><span class="lbl">Bug report draft</span><button type="button" class="btn primary" id="copyrep">Copy report</button></div><pre class="report" id="rep">'+esc(report())+'</pre></div>':'');
 }
 $("scene").addEventListener("click",function(e){
   var b=e.target.closest("[data-m]");
@@ -1140,8 +1423,10 @@ $("scene").addEventListener("click",function(e){
 });
 $("sclist").addEventListener("click",function(e){
   var b=e.target.closest("button[data-i]");if(!b)return;
-  cur=+b.dataset.i;renderList();render();
-  if(window.innerWidth<=1180)$("scene").scrollIntoView({block:"start"});
+  cur=+b.dataset.i;store("ime-lab",SC[cur].id);
+  history.replaceState(null,"","#lab/"+SC[cur].id);
+  renderList();render();
+  if(window.innerWidth<=1060)$("scene").scrollIntoView({block:"start"});
 });
 $("plat").addEventListener("click",function(e){
   var b=e.target.closest("button");if(!b)return;
@@ -1149,12 +1434,27 @@ $("plat").addEventListener("click",function(e){
   document.querySelectorAll("#plat button").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.p===plat)});
   render();
 });
+$("prog-reset").addEventListener("click",function(){solved={};store("ime-solved2","{}");renderList()});
+
+/* ---------- Checklist: copy as Markdown ---------- */
+function cellText(td){return td.textContent.replace(/\s+/g," ").trim().replace(/\|/g,"\\|")}
+function tableMd(tbl){
+  var rows=Array.prototype.map.call(tbl.rows,function(tr){return Array.prototype.map.call(tr.cells,cellText)});
+  var head=rows.shift();
+  return "| "+head.join(" | ")+" |\n|"+head.map(function(){return "---"}).join("|")+"|\n"+rows.map(function(r){return "| "+r.join(" | ")+" |"}).join("\n");
+}
+$("ck-copy").addEventListener("click",function(){
+  var t=document.querySelectorAll("#v-checklist table.ck"),msg=$("ck-msg");
+  var md="# IME checklist for real apps\n\n## Where to test\n\n"+tableMd(t[0])+"\n\n## Checks without a lab\n\n"+tableMd(t[1])+"\n\n## Record in every IME bug\n\n"+
+    Array.prototype.map.call(document.querySelectorAll("#v-checklist ul.ckl li"),function(li){return "- "+li.textContent.trim()}).join("\n")+"\n";
+  try{navigator.clipboard.writeText(md).then(function(){msg.textContent="Copied"},function(){msg.textContent="Copy blocked here."})}catch(x){msg.textContent="Copy blocked here."}
+});
 
 /* ---------- Live inspector ---------- */
 var ta=$("insp-in"),tb=$("insp-log"),rows=[];
 function addRow(cls,ev,d,ic,kc,code){
   var tr=document.createElement("tr");tr.className=cls;
-  [ev,d,ic,kc,code].forEach(function(t,i){var td=document.createElement("td");if(i===0){var s=document.createElement("span");s.textContent=t;td.appendChild(s)}else td.textContent=t;if(i===2&&t==="true")td.className="t";tr.appendChild(td)});
+  [ev,d,ic,kc,code].forEach(function(t,i){var td=document.createElement("td");td.textContent=t;if(i===2&&t==="true")td.className="t";tr.appendChild(td)});
   tb.appendChild(tr);rows.push([ev,d,ic,kc,code].join("\t"));
   if(tb.children.length>400){tb.removeChild(tb.firstChild);rows.shift()}
   var w=tb.parentElement.parentElement;w.scrollTop=w.scrollHeight;
@@ -1168,7 +1468,7 @@ $("insp-copy").onclick=function(){var t="event\tdata\tisComposing\tkeyCode\tcode
 
 /* ---------- Boot ---------- */
 document.querySelectorAll("#plat button").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.p===plat)});
-renderCompare();renderList();show();
+renderCompare();show();
 if(!reduce)dTimer=setTimeout(dLoop,2200);
 })();
 </script>
